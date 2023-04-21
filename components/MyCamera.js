@@ -20,7 +20,7 @@ const MyOrthographicCamera = () => {
     <orthographicCamera
       ref={cameraRef}
       args={[-width, width, height, -height, 0.1, 1000]}
-      position={[200, 140, 200]}
+      position={[200, 200, 200]}
       onUpdate={(camera) => camera.lookAt(0, 0, 0)}
     />
   );
