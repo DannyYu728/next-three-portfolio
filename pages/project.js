@@ -20,7 +20,7 @@ function Project() {
 
   return (
     <Canvas
-      style={{ height: '80vh' }}
+      style={{ height: '75vh' }}
   gl={{ antialias: true }}
   shadowMap={{ enabled: true, type: THREE.PCFSoftShadowMap }}
   camera={{ position: [200, 200, 200], up: [0, 1, 0], far: 1000 }}
