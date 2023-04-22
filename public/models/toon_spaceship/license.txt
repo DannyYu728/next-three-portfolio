@@ -1,0 +1,11 @@
+Model Information:
+* title:	Toon Spaceship
+* source:	https://sketchfab.com/3d-models/toon-spaceship-ce3e358791a84ebc8c9c36f71ce3e603
+* author:	Sergio Sotomayor (https://sketchfab.com/sergiosotomayor)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Toon Spaceship" (https://sketchfab.com/3d-models/toon-spaceship-ce3e358791a84ebc8c9c36f71ce3e603) by Sergio Sotomayor (https://sketchfab.com/sergiosotomayor) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
