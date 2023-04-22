@@ -1,50 +1,66 @@
-import { useRef, useState } from 'react';
+import { useRef, useEffect } from 'react';
 import { useThree, useFrame } from '@react-three/fiber';
-import { Raycaster, Vector3, Vector2, PlaneBufferGeometry} from 'three';
+import { BoxBufferGeometry, MeshStandardMaterial, Vector2, Raycaster, Vector3 } from 'three';
 
-const Box = () => {
+function Box() {
   const meshRef = useRef();
-  const { camera, size, scene } = useThree();
-  const [targetPosition, setTargetPosition] = useState(new Vector3());
+  const { camera, scene } = useThree();
+  const raycaster = new Raycaster();
+  const pointer = new Vector2();
+
+  const target = new Vector3();
+  const arriveDistance = 3;
+  const arriveTolerance = 0.5;
+  const maxSpeed = 1.5;
+
+  useEffect(() => {
+    function onMouseDown(event) {
+      pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+      pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+      raycaster.setFromCamera(pointer, camera);
+      const intersects = raycaster.intersectObjects(scene.children, true);
+
+      if (intersects.length > 0) {
+        target.set(intersects[0].point.x, intersects[0].point.y, intersects[0].point.z);
+      }
+    }
+
+    window.addEventListener('mousedown', onMouseDown);
+
+    return () => {
+      window.removeEventListener('mousedown', onMouseDown);
+    };
+  }, [camera, scene]);
 
   useFrame(() => {
     if (meshRef.current) {
-      meshRef.current.position.lerp(targetPosition, 0.1);
+      const mesh = meshRef.current;
+      const distanceToTarget = mesh.position.distanceTo(target);
+
+      if (distanceToTarget > arriveTolerance) {
+        const desiredVelocity = target
+          .clone()
+          .sub(mesh.position)
+          .normalize()
+          .multiplyScalar(maxSpeed);
+
+        if (distanceToTarget < arriveDistance) {
+          desiredVelocity.multiplyScalar(distanceToTarget / arriveDistance);
+        }
+
+        mesh.position.add(desiredVelocity);
+      }
     }
   });
 
-  // Update the box position
-  const updatePosition = (event) => {
-    const { offsetX, offsetY } = event.nativeEvent;
-    const { width, height } = size;
-    const x = (offsetX / width) * 2 - 1;
-    const y = -(offsetY / height) * 2 + 1;
-    const mouse = new Vector2(x, y);
-    const raycaster = new Raycaster();
-    raycaster.setFromCamera(mouse, camera);
-
-    // const landscapeObjects = scene.children.filter((child) => child.type === 'Mesh' && (child.name === 'invisiblePlane' || child.name === 'landscapeMesh'));
-    // const landscapeObjects = scene.children.filter((child) => child.type === 'Mesh' && child.geometry instanceof PlaneBufferGeometry);
-    const landscapeObjects = scene.children.filter((child) => child.type === 'Mesh' && (child.name === 'invisiblePlane' || child.name === 'landscapeMesh'));
-
-    const intersects = raycaster.intersectObjects(landscapeObjects);
-    if (intersects.length > 0) {
-      const { x, y, z } = intersects[0].point;
-      setTargetPosition(new Vector3(x, y, z));
-    }
-  };
-
   return (
-    <mesh ref={meshRef} onClick={updatePosition}>
+    <mesh ref={meshRef} position={[-3, 20, -3]}>
       <boxBufferGeometry args={[40, 40, 40]} />
-      <meshPhongMaterial color={'orange'} />
+      <meshStandardMaterial color="red" />
     </mesh>
   );
-};
+}
 
 export default Box;
-
-
-
-
 

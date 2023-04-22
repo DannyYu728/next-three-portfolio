@@ -28,9 +28,8 @@ const Landscape = () => {
         receiveShadow
         rotation={[-Math.PI / 2, 0, 0]}
         position={[0, 0, 0]}
-        name="invisiblePlane"
       >
-        <planeBufferGeometry args={[2000, 2000]} />
+        <planeBufferGeometry args={[500, 500]} />
         <meshBasicMaterial color={'white'} opacity={0} transparent />
       </mesh>
     );
