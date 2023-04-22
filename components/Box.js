@@ -1,6 +1,6 @@
 import { useRef, useEffect } from 'react';
 import { useThree, useFrame } from '@react-three/fiber';
-import { BoxBufferGeometry, MeshStandardMaterial, Vector2, Raycaster, Vector3 } from 'three';
+import { Vector2, Raycaster, Vector3 } from 'three';
 
 function Box() {
   const meshRef = useRef();

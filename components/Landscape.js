@@ -1,4 +1,4 @@
-import { BoxBufferGeometry, MeshPhongMaterial, PlaneBufferGeometry, MeshBasicMaterial } from 'three';
+import { BoxBufferGeometry, MeshPhongMaterial } from 'three';
 import { useLoader } from '@react-three/fiber';
 import * as THREE from 'three';
 

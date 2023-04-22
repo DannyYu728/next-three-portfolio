@@ -1,10 +1,9 @@
-import React, { useRef, useEffect } from 'react';
-import { Canvas, useThree } from '@react-three/fiber';
+import React from 'react';
+import { Canvas } from '@react-three/fiber';
 import * as THREE from 'three';
 import MyOrthographicCamera from '../components/MyCamera';
 import Landscape from '../components/Landscape';
 import MyBox from "../components/Box.js"
-import MouseHandler from '../components/MouseHandler';
 
 function Project() {
 
@@ -20,7 +19,6 @@ function Project() {
       <Landscape />
       <MyBox />
       <MyOrthographicCamera />
-      {/* <MouseHandler />  */}
     </Canvas>
   );
 };
