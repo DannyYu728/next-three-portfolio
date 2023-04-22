@@ -3,12 +3,14 @@ import Link from 'next/link'
 import Logo from './Logo'
 import ColorModeSwitch from './ColorModeSwitch'
 import { motion } from 'framer-motion'
+import { useRouter } from 'next/router';
 
 const MotionChakraLink = motion(ChakraLink)
 
 const Navbar = ({ path }) => {
   const isClient = typeof window !== 'undefined'
   const isActive = currentPath => (!isClient ? false : currentPath === path)
+  const router = useRouter();
 
   const linkVariants = {
     hover: {
@@ -21,11 +23,18 @@ const Navbar = ({ path }) => {
     }
   }
 
-  const LinkItem = ({ href, children, ...props }) => {
+  const LinkItem = ({ href, text, ...props }) => {
+
+    function handleClick(event) {
+      event.preventDefault();
+      router.push(href);
+    }
+
     return (
       <MotionChakraLink
         as={Link}
         href={href}
+        onClick={handleClick}
         whileHover={isActive(href) ? undefined : 'hover'}
         whileTap={isActive(href) ? undefined : 'tap'}
         variants={linkVariants}
@@ -33,16 +42,16 @@ const Navbar = ({ path }) => {
         color={isActive(href) ? 'green' : undefined}
         {...props}
       >
-        {children}
+        {text}
       </MotionChakraLink>
     )
   }
 
   const Items = [
-    { id: '0', href: '/', text: 'Home', icon: '🏠' },
-    { id: '1', href: '/about', text: 'About', icon: 'ℹ️' },
-    { id: '2', href: '/project', text: 'Projects', icon: '💻' },
-    { id: '3', href: '/contact', text: 'Contact', icon: '📧' }
+    { id: '0', href: '/', text: 'Home' },
+    { id: '1', href: '/about', text: 'About' },
+    { id: '2', href: '/project', text: 'Projects'},
+    { id: '3', href: '/contact', text: 'Contact'}
   ]
 
   return (
@@ -51,7 +60,7 @@ const Navbar = ({ path }) => {
         <Logo />
         <Spacer />
         {Items.map((ele, idx) => {
-          return <LinkItem href={ele.href} children={ele.text} />
+          return <LinkItem href={ele.href} text={ele.text} key={idx} />
         })}
         <ColorModeSwitch />
       </HStack>

@@ -1,6 +1,6 @@
 import { useRef, useEffect } from 'react';
 import { useThree, useFrame } from '@react-three/fiber';
-import { Vector2, Raycaster, Vector3 } from 'three';
+import { Vector2, Raycaster, Vector3, BoxGeometry } from 'three';
 
 function Box() {
   const meshRef = useRef();
@@ -56,7 +56,7 @@ function Box() {
 
   return (
     <mesh ref={meshRef} position={[-3, 20, -3]}>
-      <boxBufferGeometry args={[40, 40, 40]} />
+      <boxGeometry args={[40, 40, 40]} />
       <meshStandardMaterial color="red" />
     </mesh>
   );
