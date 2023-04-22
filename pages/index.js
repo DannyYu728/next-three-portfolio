@@ -9,6 +9,7 @@ import { Suspense, useRef, useEffect } from 'react'
 import * as THREE from 'three'
 import { useLoader, useThree } from '@react-three/fiber'
 import Spaceship from '../components/Ship'
+import SpeechBubble from '../components/SpeechBubble'
 
 function Globe() {
   const planetTexture = useLoader(THREE.TextureLoader, '/assets/planet.png')
@@ -58,12 +59,13 @@ function Home() {
       <PerspectiveCamera makeDefault fov={75} position={[15, 15, 15]} />
       <Stars />
       <CustomOrbitControls />
-      <ambientLight intensity={0.5} />
-      <directionalLight intensity={1} position={[5, 5, 5]} />
+      <ambientLight intensity={0.1} />
+      <directionalLight intensity={2} position={[5, 6, 20]} />
       <Suspense fallback={null}>
         <Globe />
         <House />
         <Spaceship />
+        <SpeechBubble msg="Hi, Click me to see more!" />
       </Suspense>
     </Canvas>
   )

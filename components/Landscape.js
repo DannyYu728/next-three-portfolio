@@ -23,7 +23,7 @@ const Landscape = () => {
   const geometry = new BoxGeometry(500, 25, 500);
 
   return (
-    <mesh name="landscapeMesh" geometry={geometry} material={materials} position={[0, -15, 0]} receiveShadow />
+    <mesh name="landscapeMesh" geometry={geometry} material={materials} position={[0, -40, 0]} receiveShadow />
   );
 };
 

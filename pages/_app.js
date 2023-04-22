@@ -11,10 +11,10 @@ const Website = ({ Component, pageProps, router }) => {
       <AnimatePresence mode="wait">
           <motion.div
             key={router.route}
-            initial={{ opacity: 0, x: 300 }}
+            initial={{ opacity: 0, x: 400 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -300 }}
-            transition={{ duration: 1.0 }}
+            transition={{ duration: 0.75 }}
           >
             <Component {...pageProps} />
           </motion.div>
