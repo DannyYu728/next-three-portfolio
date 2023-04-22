@@ -65,7 +65,7 @@ function Home() {
         <Globe />
         <House />
         <Spaceship />
-        <SpeechBubble msg="Hi, Click me to see more!" />
+        <SpeechBubble msg="Hi, Click me to see more!"/>
       </Suspense>
     </Canvas>
   )

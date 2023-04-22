@@ -37,9 +37,9 @@ function SpeechBubble({ msg }) {
     ctx.shadowOffsetX = 1;
     ctx.shadowOffsetY = 1;
     ctx.fillStyle = 'black';
-    ctx.font = "36pt Comic Sans MS";
+    ctx.font = "46pt Comic Sans MS";
     ctx.textBaseline = "top";
-    ctx.fillText(msg, 120, 65);
+    ctx.fillText(msg, 50, 65);
 
     const texture = new CanvasTexture(canvas);
     texture.needsUpdate = true;
@@ -59,56 +59,20 @@ function SpeechBubble({ msg }) {
     config: { tension: 150, friction: 20 },
   }));
 
-
   useFrame(() => {
     if (bubbleRef.current) {
-      bubbleRef.current.position.y = 11 + y.get();
-      bubbleRef.current.position.x = 0.5;
+      bubbleRef.current.position.y = 9 + y.get();
+      bubbleRef.current.position.x = 0;
       bubbleRef.current.position.z = 0;
     }
   });
 
-  const createCircularTexture = (radius) => {
-    const canvas = document.createElement('canvas');
-    canvas.width = canvas.height = 2 * radius;
-    const ctx = canvas.getContext('2d');
-  
-  
-    // Draw the circle with white fill
-    ctx.fillStyle = 'white';
-    ctx.beginPath();
-    ctx.arc(radius, radius, radius, 0, 2 * Math.PI);
-    ctx.fill();
-  
-    // Draw the border with black stroke
-    ctx.strokeStyle = 'black';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.arc(radius, radius, radius - ctx.lineWidth / 2, 0, 2 * Math.PI);
-    ctx.stroke();
-  
-    return new CanvasTexture(canvas);
-  };
-
   return (
-    <group>
       <animated.sprite
         ref={bubbleRef}
         scale={[8, 2, 1]}
         material={material}
       />
-      <animated.sprite
-        position={[0, 8.5, 0]}
-        scale={[1, 1, 1]}
-        material={new SpriteMaterial({ map: createCircularTexture(10) })}
-      />
-      <animated.sprite
-        position={[.5, 9.5, 0]}
-        scale={[1.5, 1.5, 1]}
-        material={new SpriteMaterial({ map: createCircularTexture(15) })}
-      />
-    </group>
-
   );
 }
 
