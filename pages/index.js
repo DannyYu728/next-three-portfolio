@@ -11,6 +11,7 @@ import { useLoader, useThree } from '@react-three/fiber'
 import Spaceship from '../components/Ship'
 import SpeechBubble from '../components/SpeechBubble'
 
+
 function Globe() {
   const planetTexture = useLoader(THREE.TextureLoader, '/assets/planet.png')
   planetTexture.wrapS = planetTexture.wrapT = THREE.RepeatWrapping
@@ -19,7 +20,7 @@ function Globe() {
   const planetMaterial = new THREE.MeshPhongMaterial({ map: planetTexture })
   return (
     <mesh material={planetMaterial}>
-      <sphereBufferGeometry args={[5, 64, 64]} />
+      <sphereGeometry args={[5, 64, 64]} />
     </mesh>
   )
 }
@@ -55,8 +56,8 @@ function CustomOrbitControls() {
 
 function Home() {
   return (
-    <Canvas style={{ width: '100%', height: '85vh' }} gl={{ antialias: true }}>
-      <PerspectiveCamera makeDefault fov={75} position={[15, 15, 15]} />
+    <Canvas style={{ width: '100vw', height: '85vh' }} gl={{ antialias: true }}>
+      <PerspectiveCamera makeDefault fov={90} position={[15, 15, 15]} />
       <Stars />
       <CustomOrbitControls />
       <ambientLight intensity={0.1} />

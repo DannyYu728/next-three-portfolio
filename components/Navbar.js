@@ -1,16 +1,14 @@
 import { Box, HStack, Link as ChakraLink, Spacer } from '@chakra-ui/react'
-import Link from 'next/link'
+import NextLink from 'next/link'
 import Logo from './Logo'
 import ColorModeSwitch from './ColorModeSwitch'
 import { motion } from 'framer-motion'
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/router'
 
 const MotionChakraLink = motion(ChakraLink)
 
 const Navbar = ({ path }) => {
   const isClient = typeof window !== 'undefined'
-  const isActive = currentPath => (!isClient ? false : currentPath === path)
-  const router = useRouter();
 
   const linkVariants = {
     hover: {
@@ -23,23 +21,19 @@ const Navbar = ({ path }) => {
     }
   }
 
-  const LinkItem = ({ href, text, ...props }) => {
-
-    function handleClick(event) {
-      event.preventDefault();
-      router.push(href);
-    }
+  const LinkItem = ({ path, target, href, text, ...props }) => {
+    const active = path === href
 
     return (
       <MotionChakraLink
-        as={Link}
+        as={NextLink}
         href={href}
-        onClick={handleClick}
-        whileHover={isActive(href) ? undefined : 'hover'}
-        whileTap={isActive(href) ? undefined : 'tap'}
+        target={target}
+        whileHover={active ? undefined : 'hover'}
+        whileTap={active ? undefined : 'tap'}
         variants={linkVariants}
-        fontWeight={isActive(href) ? 'bold' : 'normal'}
-        color={isActive(href) ? 'green' : undefined}
+        fontWeight={active ? 'bold' : 'normal'}
+        color={active ? 'green' : undefined}
         {...props}
       >
         {text}
@@ -50,8 +44,8 @@ const Navbar = ({ path }) => {
   const Items = [
     { id: '0', href: '/', text: 'Home' },
     { id: '1', href: '/about', text: 'About' },
-    { id: '2', href: '/project', text: 'Projects'},
-    { id: '3', href: '/contact', text: 'Contact'}
+    { id: '2', href: '/project', text: 'Projects' },
+    { id: '3', href: '/contact', text: 'Contact' }
   ]
 
   return (
@@ -60,7 +54,9 @@ const Navbar = ({ path }) => {
         <Logo />
         <Spacer />
         {Items.map((ele, idx) => {
-          return <LinkItem href={ele.href} text={ele.text} key={idx} />
+          return (
+            <LinkItem href={ele.href} text={ele.text} key={idx} path={path} />
+          )
         })}
         <ColorModeSwitch />
       </HStack>

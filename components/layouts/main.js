@@ -5,13 +5,13 @@ import Navbar from '../Navbar';
 const Main = ({ children, router }) => {
   
   return (
-    <Box as="main" maxH="100vh">
+    <Box as="main" maxW="100vw" maxH="100vh">
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>Danny Yu Website</title>
       </Head>
       <Navbar path={router.asPath} />
-      <Container maxW="100%" maxH="100vh" pt={10}>
+      <Container maxW="100vw" maxH="100vh" pt={10}>
         {children}
       </Container>
     </Box>

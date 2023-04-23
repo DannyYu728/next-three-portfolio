@@ -16,7 +16,6 @@ function Box() {
   const maxSpeed = 2;
 
   useEffect(() => {
-    console.log("hi")
     function onMouseDown(event) {
       pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
       pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -25,7 +24,7 @@ function Box() {
       const intersects = raycaster.intersectObjects(scene.children, true);
       
       if (intersects.length > 0) {
-        target.set(intersects[0].point.x, intersects[0].point.y + 40, intersects[0].point.z);
+        target.set(intersects[0].point.x + 40, intersects[0].point.y + 40, intersects[0].point.z + 40);
       }
     }
     window.addEventListener('mousedown', onMouseDown);
@@ -57,8 +56,8 @@ function Box() {
   });
 
   return (
-    <mesh ref={meshRef} position={[-3, 40, -3]} receiveShadow>
-      <boxGeometry args={[40, 40, 40]} />
+    <mesh ref={meshRef} position={[0, 40, 0]} receiveShadow>
+      <boxGeometry args={[40, 90, 40]} />
       <meshStandardMaterial color="red" />
     </mesh>
   );
