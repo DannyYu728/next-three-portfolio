@@ -1,5 +1,5 @@
 import { Canvas, useThree } from '@react-three/fiber'
-import { OrbitControls, PerspectiveCamera } from '@react-three/drei'
+import { OrbitControls, PerspectiveCamera, Stars } from '@react-three/drei'
 import { Suspense, useRef, useEffect } from 'react'
 import Landscape from '../components/Landscape'
 import MyBox from '../components/Box.js'
@@ -29,6 +29,7 @@ function Project() {
       <PerspectiveCamera makeDefault fov={50} position={[360, 500, 500]} />
       <CustomOrbitControls />
       <Suspense fallback={null}>
+        <Stars radius={100} depth={500} count={5000} factor={20} fade speed={1}/>
         <MyBox />
         <Landscape />
       </Suspense>

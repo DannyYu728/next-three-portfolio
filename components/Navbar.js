@@ -3,12 +3,10 @@ import NextLink from 'next/link'
 import Logo from './Logo'
 import ColorModeSwitch from './ColorModeSwitch'
 import { motion } from 'framer-motion'
-import { useRouter } from 'next/router'
 
 const MotionChakraLink = motion(ChakraLink)
 
 const Navbar = ({ path }) => {
-  const isClient = typeof window !== 'undefined'
 
   const linkVariants = {
     hover: {

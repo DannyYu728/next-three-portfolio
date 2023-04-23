@@ -11,8 +11,8 @@ height: 30px;
 line-height: 20px;
 padding 10px;
 
-&:hover img {
-  transform: rotate(20deg);
+&:hover  {
+  color: green;
 }
 `
 
@@ -21,7 +21,7 @@ const Logo = () => {
   return (
     <Link href="/">
         <LogoBox>
-          <Text
+        <Text
             fontFamily="M Plus Rounded 1c"
             fontWeight="bold"
             ml={3}

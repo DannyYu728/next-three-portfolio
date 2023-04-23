@@ -13,7 +13,7 @@ function Box() {
 
   const vehicle = new YUKA.Vehicle();
   vehicle.position.set(0, 40, 0);
-  vehicle.maxSpeed = 50;
+  vehicle.maxSpeed = 60;
 
   const target = new YUKA.GameEntity();
 
@@ -42,7 +42,7 @@ function Box() {
   useFrame(() => {
     if (meshRef.current) {
       const mesh = meshRef.current;
-      const delta = 1 / 60;
+      const delta = 1 / 30;
       vehicle.update(delta);
       mesh.position.copy(vehicle.position);
       const direction = target.position.clone().sub(vehicle.position);
