@@ -1,30 +1,35 @@
 import { useRef, useEffect } from 'react';
 import { useThree, useFrame } from '@react-three/fiber';
-import { Vector2, Raycaster, Vector3 } from 'three';
-import {useRouter} from 'next/router';
+import { Vector2, Raycaster } from 'three';
+import { useRouter } from 'next/router';
+import * as YUKA from 'yuka';
 
 function Box() {
-  const router = useRouter()
+  const router = useRouter();
   const meshRef = useRef();
   const { camera, scene } = useThree();
   const raycaster = new Raycaster();
   const pointer = new Vector2();
 
-  const target = new Vector3();
-  const arriveDistance = 3;
-  const arriveTolerance = 0.5;
-  const maxSpeed = 2;
+  const vehicle = new YUKA.Vehicle();
+  vehicle.position.set(0, 40, 0);
+  vehicle.maxSpeed = 50;
+
+  const target = new YUKA.GameEntity();
+
+  const arriveBehavior = new YUKA.ArriveBehavior(target.position, 3, 0.5);
+  vehicle.steering.add(arriveBehavior);
 
   useEffect(() => {
     function onMouseDown(event) {
       pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
       pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
-      
+
       raycaster.setFromCamera(pointer, camera);
       const intersects = raycaster.intersectObjects(scene.children, true);
-      
+
       if (intersects.length > 0) {
-        target.set(intersects[0].point.x + 40, intersects[0].point.y + 40, intersects[0].point.z + 40);
+        target.position.set(intersects[0].point.x, 18, intersects[0].point.z);
       }
     }
     window.addEventListener('mousedown', onMouseDown);
@@ -37,21 +42,13 @@ function Box() {
   useFrame(() => {
     if (meshRef.current) {
       const mesh = meshRef.current;
-      const distanceToTarget = mesh.position.distanceTo(target);
-
-      if (distanceToTarget > arriveTolerance) {
-        const desiredVelocity = target
-          .clone()
-          .sub(mesh.position)
-          .normalize()
-          .multiplyScalar(maxSpeed);
-
-        if (distanceToTarget < arriveDistance) {
-          desiredVelocity.multiplyScalar(distanceToTarget / arriveDistance);
-        }
-
-        mesh.position.add(desiredVelocity);
-      }
+      const delta = 1 / 60;
+      vehicle.update(delta);
+      mesh.position.copy(vehicle.position);
+      const direction = target.position.clone().sub(vehicle.position);
+      direction.y = 0; 
+      direction.normalize();
+      mesh.lookAt(mesh.position.clone().add(direction));
     }
   });
 
@@ -64,4 +61,5 @@ function Box() {
 }
 
 export default Box;
+
 

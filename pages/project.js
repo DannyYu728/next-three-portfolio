@@ -1,7 +1,6 @@
 import { Canvas, useThree } from '@react-three/fiber'
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei'
 import { Suspense, useRef, useEffect } from 'react'
-import MyOrthographicCamera from '../components/MyCamera'
 import Landscape from '../components/Landscape'
 import MyBox from '../components/Box.js'
 
@@ -13,6 +12,9 @@ function CustomOrbitControls() {
     if (controls.current) {
       controls.current.target.set(-0.5, 4.85, 0)
       controls.current.update()
+
+      controls.current.minDistance = 120
+      controls.current.maxDistance = 1600
     }
   }, [controls, camera, gl.domElement])
 
@@ -24,7 +26,6 @@ function Project() {
     <Canvas style={{ width: '100vw', height: '85vh' }} gl={{ antialias: true }}>
       <ambientLight intensity={0.1} />
       <directionalLight intensity={1.5} position={[2.5, 10, 20]} />
-      {/* <MyOrthographicCamera /> */}
       <PerspectiveCamera makeDefault fov={50} position={[360, 500, 500]} />
       <CustomOrbitControls />
       <Suspense fallback={null}>
