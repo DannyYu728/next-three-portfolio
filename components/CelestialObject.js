@@ -160,14 +160,176 @@ export const CustomOrbitControls = () => {
       controls.current.target.set(-0.5, 4.85, 0)
       controls.current.update()
       controls.current.minDistance = 8
-      controls.current.maxDistance = 400
+      controls.current.maxDistance = 500
     }
   }, [controls, camera, gl.domElement])
 
   return <OrbitControls ref={controls} args={[camera, gl.domElement]} />
 }
 
+import { useMemo } from 'react';
+import { Color, Vector3, Spherical, PointsMaterial } from 'three';
+import { useColorModeValue, useTheme } from '@chakra-ui/react';
+
+// export function CustomStars() {
+  // const bgColor = useColorModeValue('#f1ddce', '#ffffff');
+
+//   const { position, size } = useMemo(() => {
+//     const positions = [];
+//     const sizes = [];
+//     const radius = 500;
+//     const depth = 500;
+//     const count = 5000;
+//     const factor = 20;
+
+//     let r = radius + depth;
+//     const increment = depth / count;
+
+//     for (let i = 0; i < count; i++) {
+//       r -= increment * Math.random();
+//       const star = new Vector3().setFromSpherical(
+//         new Spherical(r, Math.acos(1 - Math.random() * 2), Math.random() * 2 * Math.PI),
+//       );
+//       positions.push(star.x, star.y, star.z);
+//       sizes.push((0.5 + 0.5 * Math.random()) * factor);
+//     }
+
+//     return {
+//       position: new Float32Array(positions),
+//       size: new Float32Array(sizes),
+//     };
+//   }, []);
+
+//   const pointsMaterial = useMemo(() => {
+//     return new PointsMaterial({
+//       size: 1,
+//       sizeAttenuation: true,
+//       color: new Color(bgColor),
+//       map: undefined,
+//       alphaTest: 0.5,
+//       transparent: true,
+//     });
+//   }, [bgColor]);
+
+//   return (
+//     <points>
+//       <bufferGeometry>
+//         <bufferAttribute attach="attributes-position" count={position.length / 3} array={position} itemSize={3} />
+//         <bufferAttribute attach="attributes-size" count={size.length} array={size} itemSize={1} />
+//       </bufferGeometry>
+//       <primitive object={pointsMaterial} attach="material" />
+//     </points>
+//   );
+// }
 
 
 
 
+import * as React from 'react';
+import { AdditiveBlending, ShaderMaterial } from 'three';
+
+class StarfieldMaterial extends ShaderMaterial {
+  constructor() {
+    super({
+      uniforms: {
+        time: {
+          value: 0.0
+        },
+        fade: {
+          value: 1.0
+        }
+      },
+      vertexShader:
+      /* glsl */
+      `
+      uniform float time;
+      attribute float size;
+      varying vec3 vColor;
+      void main() {
+        vColor = color;
+        vec4 mvPosition = modelViewMatrix * vec4(position, 0.5);
+        gl_PointSize = size * (30.0 / -mvPosition.z) * (3.0 + sin(time + 100.0));
+        gl_Position = projectionMatrix * mvPosition;
+      }`,
+      fragmentShader:
+      /* glsl */
+      `
+      uniform sampler2D pointTexture;
+      uniform float fade;
+      varying vec3 vColor;
+      void main() {
+        float opacity = 1.0;
+        if (fade == 1.0) {
+          float d = distance(gl_PointCoord, vec2(0.5, 0.5));
+          opacity = 1.0 / (1.0 + exp(16.0 * (d - 0.25)));
+        }
+        gl_FragColor = vec4(vColor, opacity);
+
+        #include <tonemapping_fragment>
+	      #include <encodings_fragment>
+      }`
+    });
+  }
+
+}
+
+const genStar = r => {
+  return new Vector3().setFromSpherical(new Spherical(r, Math.acos(1 - Math.random() * 2), Math.random() * 2 * Math.PI));
+};
+
+const CustomStars = /*#__PURE__*/React.forwardRef(({
+  radius = 100,
+  depth = 50,
+  count = 5000,
+  saturation = 0,
+  factor = 4,
+  fade = false,
+  speed = 1
+}, ref) => {
+  const bgColor = useColorModeValue('green', 'red');
+  const material = React.useRef();
+  const [position, color, size] = React.useMemo(() => {
+    const positions = [];
+    const colors = [];
+    const sizes = Array.from({
+      length: count
+    }, () => (0.5 + 0.5 * Math.random()) * factor);
+    const color = new Color(bgColor);
+    let r = radius + depth;
+    const increment = depth / count;
+
+    for (let i = 0; i < count; i++) {
+      r -= increment * Math.random();
+      positions.push(...genStar(r).toArray());
+      // color.setHSL(i / count, saturation, 0.9);
+      colors.push(color.r, color.g, color.b);
+    }
+
+    return [new Float32Array(positions), new Float32Array(colors), new Float32Array(sizes)];
+  }, [count, depth, factor, radius, saturation, bgColor]);
+  useFrame(state => material.current && (material.current.uniforms.time.value = state.clock.getElapsedTime() * speed));
+  const [starfieldMaterial] = React.useState(() => new StarfieldMaterial());
+  return /*#__PURE__*/React.createElement("points", {
+    ref: ref
+  }, /*#__PURE__*/React.createElement("bufferGeometry", null, /*#__PURE__*/React.createElement("bufferAttribute", {
+    attach: "attributes-position",
+    args: [position, 3]
+  }), /*#__PURE__*/React.createElement("bufferAttribute", {
+    attach: "attributes-color",
+    args: [color, 3]
+  }), /*#__PURE__*/React.createElement("bufferAttribute", {
+    attach: "attributes-size",
+    args: [size, 1]
+  })), /*#__PURE__*/React.createElement("primitive", {
+    ref: material,
+    object: starfieldMaterial,
+    attach: "material",
+    blending: AdditiveBlending,
+    "uniforms-fade-value": fade,
+    depthWrite: false,
+    transparent: true,
+    vertexColors: true
+  }));
+});
+
+export { CustomStars };

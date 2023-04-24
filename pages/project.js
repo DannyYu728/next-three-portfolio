@@ -40,7 +40,7 @@ function Project() {
           speed={1}
         />
         <MyBox />
-        <SpaceShip />
+        <SpaceShip position={[-350, 120, 250]} size={120} rotation={[0, Math.PI / 1, 0]}/>
         <House
           scene="/models/chinese_house/scene.gltf"
           scale={45}
