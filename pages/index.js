@@ -1,6 +1,7 @@
 import { Canvas } from '@react-three/fiber'
 import { Stars, PerspectiveCamera } from '@react-three/drei'
 import { Suspense } from 'react'
+import { Vector3 } from 'three'
 import {
   Planet,
   Sun,
@@ -14,6 +15,7 @@ import SpeechBubble from '../components/SpeechBubble'
 import { CelestialsObject } from '../components/celestialObjectsArray'
 
 function Home() {
+  const earthPosition = new Vector3(0, 0, 0)
 
   return (
     <Canvas style={{ width: '100vw', height: '85vh' }} gl={{ antialias: true }}>
@@ -29,12 +31,25 @@ function Home() {
             position={item.position}
             size={item.size}
             key={idx}
+            orbitTarget={item.name === 'Moon' ? earthPosition : undefined}
+            orbitSpeed={item.name === 'Moon' ? 0.002 : undefined}
           />
         ))}
         <Sun />
-        <AsteroidBelt count={3000} />
+        <AsteroidBelt count={4000} />
         <SaturnRing />
-        <House />
+        <House
+          scene="/models/chinese_house/scene.gltf"
+          scale={0.5}
+          position={[-0.5, 4.85, 0]}
+          rotation={[0, Math.PI / 5, 0]}
+        />
+        <House
+          scene="/models/guest_house/scene.gltf"
+          scale={0.2}
+          position={[-10.5, 7.5, 2.5]}
+          rotation={[0, Math.PI / 5, 0]}
+        />
         <Spaceship />
         <SpeechBubble msg="Hi, Click me to see more!" />
       </Suspense>

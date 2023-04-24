@@ -1,7 +1,7 @@
 import { OrbitControls, useGLTF } from '@react-three/drei'
-import { useRef, useEffect, useMemo } from 'react'
+import { useRef, useEffect } from 'react'
 import * as THREE from 'three'
-import { useLoader, useThree } from '@react-three/fiber'
+import { useLoader, useThree, useFrame } from '@react-three/fiber'
 
 export const distanceFromSun = distanceinAU => {
   const sunRadius = 5 * 109.2
@@ -22,15 +22,31 @@ export const calculatePlanetPosition =(distanceFromSun, angleInDegrees) => {
   return planetPosition
 }
 
-export const Planet = ({ textureUrl, size, position }) => {
+export const Planet = ({ textureUrl, size, position, orbitTarget, orbitSpeed = 0.001  }) => {
   const texture = useLoader(THREE.TextureLoader, textureUrl)
   texture.wrapS = texture.wrapT = THREE.RepeatWrapping
   texture.repeat.set(1, 1)
   texture.anisotropy = 16
   const planetMaterial = new THREE.MeshPhongMaterial({ map: texture })
 
+  const meshRef = useRef();
+
+  useEffect(() => {
+    if (meshRef.current && orbitTarget) {
+      meshRef.current.position.set(...position);
+      meshRef.current.position.sub(orbitTarget);
+    }
+  }, [orbitTarget, position]);
+
+  useFrame(() => {
+    if (meshRef.current && orbitTarget) {
+      meshRef.current.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), orbitSpeed);
+      meshRef.current.position.add(orbitTarget);
+    }
+  });
+
   return (
-    <mesh position={position} material={planetMaterial}>
+    <mesh ref={meshRef} position={position} material={planetMaterial}>
       <sphereGeometry args={[size, 64, 64]} />
     </mesh>
   )
@@ -69,14 +85,14 @@ export const Asteroid = ({ position, size, texture }) => {
 
   return (
     <mesh position={position} geometry={geometry} material={material}>
-      <meshStandardMaterial attach="material" map={texture} />
+      <meshStandardMaterial attach="material" map={texture}/>
     </mesh>
   );
 };
 
 export const AsteroidBelt = ({ count}) => {
   const texture = useLoader(THREE.TextureLoader, '/assets/moon.jpeg');
-  const minDistance = distanceFromSun(2.45)
+  const minDistance = distanceFromSun(2.75)
   const maxDistance = distanceFromSun(3.0)
   const asteroidBelt = [];
 
@@ -114,23 +130,23 @@ export const SaturnRing = () => {
   const tiltInRadians = (tilt * Math.PI) / 180;
 
   return (
-    <mesh position={position} geometry={ringGeometry} material={ringMaterial} rotation={[tiltInRadians, 0, 0]}>
+    <mesh position={position} geometry={ringGeometry} material={ringMaterial} rotation={[tiltInRadians, 0, 5]}>
       <meshStandardMaterial attach="material" map={texture} />
     </mesh>
   );
 };
 
-export const House = () => {
+export const House = ({scene, scale, position, rotation, ref}) => {
   const houseRef = useRef()
-  const gltf = useGLTF('/models/cartoon_house/scene.gltf')
+  const gltf = useGLTF(scene)
 
   return (
     <primitive
       ref={houseRef}
       object={gltf.scene}
-      scale={0.5}
-      position={[-0.5, 4.85, 0]}
-      rotation={[0, Math.PI / 0.9, 0]}
+      scale={scale}
+      position={position}
+      rotation={rotation}
     />
   )
 }
@@ -150,3 +166,8 @@ export const CustomOrbitControls = () => {
 
   return <OrbitControls ref={controls} args={[camera, gl.domElement]} />
 }
+
+
+
+
+

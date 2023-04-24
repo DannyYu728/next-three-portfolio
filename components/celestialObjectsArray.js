@@ -29,7 +29,7 @@ export const CelestialsObject = [
   {
     name: 'Mars',
     size: earthSize * 0.53,
-    position: calculatePlanetPosition(distanceFromSun(2.5), -8).toArray(),
+    position: calculatePlanetPosition(distanceFromSun(2.5), -3).toArray(),
     textureUrl: '/assets/mars.jpeg'
   },
   {

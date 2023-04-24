@@ -17,7 +17,6 @@ function Spaceship() {
 
       groupRef.current.position.set(x, 5, z);
 
-      // Calculate the tangent of the circle
       const tangent = new THREE.Vector3(Math.cos(angle), 0, -Math.sin(angle));
       const target = new THREE.Vector3().addVectors(groupRef.current.position, tangent);
 
@@ -27,7 +26,7 @@ function Spaceship() {
 
   return (
     <group ref={groupRef}>
-      <primitive object={scene} scale={0.02} />
+      <primitive object={scene} scale={0.01} />
     </group>
   );
 }

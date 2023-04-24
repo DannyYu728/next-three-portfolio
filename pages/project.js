@@ -3,6 +3,8 @@ import { OrbitControls, PerspectiveCamera, Stars } from '@react-three/drei'
 import { Suspense, useRef, useEffect } from 'react'
 import Landscape from '../components/Landscape'
 import MyBox from '../components/Box.js'
+import { House } from '../components/CelestialObject'
+import SpaceShip from '../components/Ship'
 
 function CustomOrbitControls() {
   const { camera, gl } = useThree()
@@ -26,11 +28,25 @@ function Project() {
     <Canvas style={{ width: '100vw', height: '85vh' }} gl={{ antialias: true }}>
       <ambientLight intensity={0.1} />
       <directionalLight intensity={1.5} position={[2.5, 10, 20]} />
-      <PerspectiveCamera makeDefault fov={50} position={[360, 500, 500]} />
+      <PerspectiveCamera makeDefault fov={90} position={[360, 500, 500]} />
       <CustomOrbitControls />
       <Suspense fallback={null}>
-        <Stars radius={100} depth={500} count={5000} factor={20} fade speed={1}/>
+        <Stars
+          radius={200}
+          depth={500}
+          count={5000}
+          factor={20}
+          fade
+          speed={1}
+        />
         <MyBox />
+        <SpaceShip />
+        <House
+          scene="/models/chinese_house/scene.gltf"
+          scale={45}
+          position={[0, 0, -300]}
+          rotation={[0, Math.PI / 90, 0]}
+        />
         <Landscape />
       </Suspense>
     </Canvas>

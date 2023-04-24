@@ -20,10 +20,10 @@ const Landscape = () => {
 
   const materials = [dirtMaterial, dirtMaterial, grassMaterial, dirtMaterial, dirtMaterial, dirtMaterial];
 
-  const geometry = new BoxGeometry(500, 25, 500);
+  const geometry = new BoxGeometry(800, 25, 800);
 
   return (
-    <mesh name="landscapeMesh" geometry={geometry} material={materials} position={[0, -40, 0]} receiveShadow />
+    <mesh name="landscapeMesh" geometry={geometry} material={materials} position={[0, -12.5, 0]} receiveShadow />
   );
 };
 
