@@ -8,96 +8,44 @@ import {
 import { Suspense, useRef, useEffect } from 'react'
 import * as THREE from 'three'
 import { useLoader, useThree } from '@react-three/fiber'
-import CelestialObject from '../components/CelestialObject'
+import {Planet, Sun, House, CustomOrbitControls} from '../components/CelestialObject'
 import Spaceship from '../components/Ship'
 import SpeechBubble from '../components/SpeechBubble'
-import {Celestials} from '../components/objectArray'
+import {CelestialsObject} from '../components/celestialObjectsArray'
 
-function Sun() {
-  const texture = useLoader(THREE.TextureLoader, '/assets/sun.jpeg');
-  const sunSize = 5 * 109.2
-  return (
-    <mesh position={[5 * 50, 6 * 50, 20 * 50]}>
-      <sphereGeometry args={[sunSize, 32, 32]} />
-      <meshBasicMaterial map={texture} />
-    </mesh>
-  );
-}
-
-// function Mercury() {
-//   const texture = useLoader(THREE.TextureLoader, '/assets/mercury.jpeg');
-//   const sunPosition = new THREE.Vector3(5 * 50, 6 * 50, 20 * 50);
-//   const earthPosition = new THREE.Vector3(0, 0, 0);
-//   const sunToEarth = new THREE.Vector3().subVectors(earthPosition, sunPosition);
-//   const sunToEarthNormalized = sunToEarth.clone().normalize();
-//   const sunRadius = 5 * 109.2;
-//   const mercurySize = 5 * 0.38; // Mercury's size
-//   const mercuryDistanceFromSun = sunRadius + mercurySize * 50; // Adjust the multiplier (1.5) to set the distance
-//   const mercuryPosition = sunPosition
-//     .clone()
-//     .add(sunToEarthNormalized.multiplyScalar(mercuryDistanceFromSun));
+// function House() {
+//   const houseRef = useRef()
+//   const gltf = useGLTF('/models/cartoon_house/scene.gltf')
 
 //   return (
-//     <mesh position={mercuryPosition.toArray()}>
-//       <sphereGeometry args={[mercurySize, 64, 64]} />
-//       <meshBasicMaterial map={texture} />
-//     </mesh>
-//   );
+//     <primitive
+//       ref={houseRef}
+//       object={gltf.scene}
+//       scale={0.5}
+//       position={[-0.5, 4.85, 0]}
+//       rotation={[0, Math.PI / 0.9, 0]}
+//     />
+//   )
 // }
 
-// function calculatePlanetPosition(distanceFromSun, angleInDegrees) {
-//   const sunPosition = new THREE.Vector3(5 * 50, 6 * 50, 20 * 50);
-//   const earthPosition = new THREE.Vector3(0, 0, 0);
-//   const angleInRadians = (angleInDegrees * Math.PI) / 180;
-//   const sunToEarth = new THREE.Vector3().subVectors(earthPosition, sunPosition);
-//   const sunToEarthNormalized = sunToEarth.clone().normalize();
-//   const rotationAxis = new THREE.Vector3(0, 1, 0); // Assuming planets lie in the XZ plane
-//   sunToEarthNormalized.applyAxisAngle(rotationAxis, angleInRadians);
-//   const planetPosition = sunPosition.clone().add(sunToEarthNormalized.multiplyScalar(distanceFromSun));
-//   return planetPosition;
+// function CustomOrbitControls() {
+//   const { camera, gl } = useThree()
+//   const controls = useRef()
+
+//   useEffect(() => {
+//     if (controls.current) {
+//       controls.current.target.set(-0.5, 4.85, 0)
+//       controls.current.update()
+
+//       controls.current.minDistance = 8
+//       controls.current.maxDistance = 400
+//     }
+//   }, [controls, camera, gl.domElement])
+
+//   return <OrbitControls ref={controls} args={[camera, gl.domElement]} />
 // }
-
-
-
-
-function House() {
-  const houseRef = useRef()
-  const gltf = useGLTF('/models/cartoon_house/scene.gltf')
-
-  return (
-    <primitive
-      ref={houseRef}
-      object={gltf.scene}
-      scale={0.5}
-      position={[-0.5, 4.85, 0]}
-      rotation={[0, Math.PI / 0.9, 0]}
-    />
-  )
-}
-
-function CustomOrbitControls() {
-  const { camera, gl } = useThree()
-  const controls = useRef()
-
-  useEffect(() => {
-    if (controls.current) {
-      controls.current.target.set(-0.5, 4.85, 0)
-      controls.current.update()
-
-      controls.current.minDistance = 8
-      controls.current.maxDistance = 400
-    }
-  }, [controls, camera, gl.domElement])
-
-  return <OrbitControls ref={controls} args={[camera, gl.domElement]} />
-}
 
 function Home() {
-  const earthSize = 5
-  const sunRadius = 5 * 109.2;
-  const distanceFromSun = sunRadius + earthSize * 0.39 * 50;
-  const mercuryAngle = 30
-  const mercuryPosition = calculatePlanetPosition(distanceFromSun, 30);
 
   return (
     <Canvas style={{ width: '100vw', height: '85vh' }} gl={{ antialias: true }}>
@@ -107,9 +55,9 @@ function Home() {
       <ambientLight intensity={0.1} />
       <directionalLight intensity={2} position={[5, 6, 20]} />
       <Suspense fallback={null}>
-        <CelestialObject textureUrl='/assets/earth.jpeg' position={[0, 0, 0]} size={earthSize} />
-        <CelestialObject textureUrl='/assets/moon.jpeg' position={[-5, -6, -20]} size={earthSize * 0.27} />
-        <CelestialObject textureUrl='/assets/mercury.jpeg' position={mercuryPosition.toArray()} size={earthSize * 0.38} />
+        {CelestialsObject.map((item, idx) => (
+          <Planet textureUrl={item.textureUrl} position={item.position} size={item.size} key={idx}/>
+        ))}
         <Sun />
         <House />
         <Spaceship />
