@@ -1,7 +1,26 @@
 import { OrbitControls, useGLTF } from '@react-three/drei'
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useMemo } from 'react'
 import * as THREE from 'three'
 import { useLoader, useThree } from '@react-three/fiber'
+
+export const distanceFromSun = distanceinAU => {
+  const sunRadius = 5 * 109.2
+  return sunRadius + 5 * distanceinAU * 50
+}
+
+export const calculatePlanetPosition =(distanceFromSun, angleInDegrees) => {
+  const sunPosition = new THREE.Vector3(5 * 50, 6 * 50, 20 * 50)
+  const earthPosition = new THREE.Vector3(0, 0, 0)
+  const angleInRadians = (angleInDegrees * Math.PI) / 180
+  const sunToEarth = new THREE.Vector3().subVectors(earthPosition, sunPosition)
+  const sunToEarthNormalized = sunToEarth.clone().normalize()
+  const rotationAxis = new THREE.Vector3(0, 1, 0)
+  sunToEarthNormalized.applyAxisAngle(rotationAxis, angleInRadians)
+  const planetPosition = sunPosition
+    .clone()
+    .add(sunToEarthNormalized.multiplyScalar(distanceFromSun))
+  return planetPosition
+}
 
 export const Planet = ({ textureUrl, size, position }) => {
   const texture = useLoader(THREE.TextureLoader, textureUrl)
@@ -20,28 +39,86 @@ export const Planet = ({ textureUrl, size, position }) => {
 export const Sun = () => {
   const sunSize = 5 * 109.2
   const texture = useLoader(THREE.TextureLoader, '/assets/sun.jpeg')
-  const glowTexture = useLoader(THREE.TextureLoader, '/assets/glow.png')
-  const glowMaterial = new THREE.SpriteMaterial({
+  const glowTexture = useLoader(THREE.TextureLoader, '/assets/glow.png');
+  const glowMaterial = new THREE.MeshBasicMaterial({
     map: glowTexture,
     transparent: true,
-    blending: THREE.AdditiveBlending
-  })
-  const glowSprite = new THREE.Sprite(glowMaterial)
-  const glowSizeMultiplier = 2.8
-  glowSprite.scale.set(
-    sunSize * glowSizeMultiplier,
-    sunSize * glowSizeMultiplier,
-    0
-  )
-
+    blending: THREE.AdditiveBlending,
+    side: THREE.DoubleSide
+  });
+  const glowSizeMultiplier = 1.015;
+  
   return (
-    <mesh position={[5 * 50, 6 * 50, 20 * 50]}>
-      <sphereGeometry args={[sunSize, 32, 32]} />
-      <meshBasicMaterial map={texture} />
-      <primitive object={glowSprite} />
-    </mesh>
+    <>
+      <mesh position={[5 * 50, 6 * 50, 20 * 50]}>
+        <sphereGeometry args={[sunSize, 64, 64]} />
+        <meshBasicMaterial map={texture} />
+      </mesh>
+      <mesh position={[4.9 * 50, 5.9 * 50, 20 * 50]}>
+        <sphereGeometry args={[sunSize * glowSizeMultiplier, 64, 64]} />
+        <meshBasicMaterial {...glowMaterial} />
+      </mesh>
+    </>
   )
 }
+
+export const Asteroid = ({ position, size, texture }) => {
+  const material = new THREE.MeshStandardMaterial({ map: texture });
+
+  const geometry = new THREE.IcosahedronGeometry(size, Math.floor(Math.random() * 2));
+
+  return (
+    <mesh position={position} geometry={geometry} material={material}>
+      <meshStandardMaterial attach="material" map={texture} />
+    </mesh>
+  );
+};
+
+export const AsteroidBelt = ({ count}) => {
+  const texture = useLoader(THREE.TextureLoader, '/assets/moon.jpeg');
+  const minDistance = distanceFromSun(2.45)
+  const maxDistance = distanceFromSun(3.0)
+  const asteroidBelt = [];
+
+  for (let i = 0; i < count; i++) {
+    const distanceFromSun = THREE.MathUtils.randFloat(minDistance, maxDistance);
+    const angle = THREE.MathUtils.randFloat(0, Math.PI * 2);
+
+    const sunPosition = new THREE.Vector3(5 * 50, 6 * 50, 20 * 50);
+
+    const position = new THREE.Vector3(
+      sunPosition.x + distanceFromSun * Math.cos(angle),
+      sunPosition.y + THREE.MathUtils.randFloat(-200, -450),
+      sunPosition.z + distanceFromSun * Math.sin(angle)
+    );
+
+    const size = THREE.MathUtils.randFloat(0.5, 1.5);
+
+    asteroidBelt.push(<Asteroid key={i} position={position.toArray()} size={size} texture={texture} />);
+  }
+
+  return <>{asteroidBelt}</>;
+};
+
+export const SaturnRing = () => {
+  const texture = useLoader(THREE.TextureLoader, '/assets/saturn-ring.png');
+  const position = calculatePlanetPosition(distanceFromSun(5.58), 18).toArray();
+  const tilt = -70
+  const ringSize = 64; 
+  const ringGeometry = new THREE.RingGeometry(ringSize, ringSize * 1.5, 64);
+  const ringMaterial = new THREE.MeshStandardMaterial({
+    map: texture,
+    side: THREE.DoubleSide,
+    transparent: true,
+  });
+  const tiltInRadians = (tilt * Math.PI) / 180;
+
+  return (
+    <mesh position={position} geometry={ringGeometry} material={ringMaterial} rotation={[tiltInRadians, 0, 0]}>
+      <meshStandardMaterial attach="material" map={texture} />
+    </mesh>
+  );
+};
 
 export const House = () => {
   const houseRef = useRef()
@@ -66,7 +143,6 @@ export const CustomOrbitControls = () => {
     if (controls.current) {
       controls.current.target.set(-0.5, 4.85, 0)
       controls.current.update()
-
       controls.current.minDistance = 8
       controls.current.maxDistance = 400
     }
