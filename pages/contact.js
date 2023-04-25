@@ -1,9 +1,9 @@
 import React from 'react'
-import { Box, Heading, Text } from '@chakra-ui/react'
+import { Box, Container, Heading, Text } from '@chakra-ui/react'
 
 const Contact = () => {
   return (
-    <>
+    <Container mt={8} maxW={'container.md'}>
       <Box textAlign="center" mb={6}>
         <Heading as="h2" size="xl" mb={4}>
           About Me
@@ -33,7 +33,7 @@ const Contact = () => {
           world around me.
         </Text>
       </Box>
-    </>
+    </Container>
   )
 }
 
