@@ -3,7 +3,6 @@ import Layout from '../components/layouts/main'
 import theme from '../lib/theme'
 import { AnimatePresence, motion } from 'framer-motion'
 import '../styles/global.css'
-import { useEffect, useState } from 'react'
 
 const Website = ({ Component, pageProps, router }) => {
   return (

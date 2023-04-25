@@ -1,8 +1,8 @@
-import * as THREE from 'three';
 import { useEffect, useRef } from 'react';
 import { useThree } from '@react-three/fiber';
+import { OrbitControls } from '@react-three/drei'
 
-const MyOrthographicCamera = () => {
+export const MyOrthographicCamera = () => {
   const cameraRef = useRef();
   const { set } = useThree();
 
@@ -26,5 +26,19 @@ const MyOrthographicCamera = () => {
   );
 };
 
-export default MyOrthographicCamera;
+export const CustomOrbitControls = ({min=8, max=500}) => {
+  const { camera, gl } = useThree()
+  const controls = useRef()
+
+  useEffect(() => {
+    if (controls.current) {
+      controls.current.target.set(-0.5, 4.85, 0)
+      controls.current.update()
+      controls.current.minDistance = min
+      controls.current.maxDistance = max
+    }
+  }, [controls, camera, gl.domElement])
+
+  return <OrbitControls ref={controls} args={[camera, gl.domElement]} />
+}
 

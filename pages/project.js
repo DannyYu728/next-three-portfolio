@@ -1,55 +1,60 @@
-import { Canvas, useThree } from '@react-three/fiber'
-import { OrbitControls, PerspectiveCamera, Stars } from '@react-three/drei'
-import { Suspense, useRef, useEffect } from 'react'
-import Landscape from '../components/Landscape'
-import MyBox from '../components/Box.js'
-import { House } from '../components/CelestialObject'
-import SpaceShip from '../components/Ship'
-
-function CustomOrbitControls() {
-  const { camera, gl } = useThree()
-  const controls = useRef()
-
-  useEffect(() => {
-    if (controls.current) {
-      controls.current.target.set(-0.5, 4.85, 0)
-      controls.current.update()
-
-      controls.current.minDistance = 120
-      controls.current.maxDistance = 1600
-    }
-  }, [controls, camera, gl.domElement])
-
-  return <OrbitControls ref={controls} args={[camera, gl.domElement]} />
-}
+import { Canvas } from '@react-three/fiber'
+import { PerspectiveCamera, Stars, Preload } from '@react-three/drei'
+import { Suspense } from 'react'
+import { useColorModeValue, Box } from '@chakra-ui/react'
+import { LandscapeModel } from '../lib/Models/Landscape'
+import { Character, SpaceShip, Building } from '../lib/Models/Models.js'
+import { CustomOrbitControls } from '../components/MyCamera'
 
 function Project() {
+  const bgColor = useColorModeValue('#86b8e8', '#202023')
+
   return (
-    <Canvas style={{ width: '100vw', height: '85vh' }} gl={{ antialias: true }}>
-      <ambientLight intensity={0.1} />
-      <directionalLight intensity={1.5} position={[2.5, 10, 20]} />
-      <PerspectiveCamera makeDefault fov={90} position={[360, 500, 500]} />
-      <CustomOrbitControls />
-      <Suspense fallback={null}>
-        <Stars
-          radius={200}
-          depth={500}
-          count={5000}
-          factor={20}
-          fade
-          speed={1}
+    <Box bg={bgColor}>
+      <Canvas
+        style={{ width: '100vw', height: '100vh' }}
+        gl={{ antialias: true }}
+      >
+        <ambientLight intensity={0.1} />
+        <directionalLight intensity={1} position={[2.5, 10, 20]} />
+        <PerspectiveCamera
+          makeDefault
+          near={20}
+          fov={90}
+          position={[380, 350, 500]}
+          far={10000}
         />
-        <MyBox />
-        <SpaceShip position={[-350, 120, 250]} size={120} rotation={[0, Math.PI / 1, 0]}/>
-        <House
-          scene="/models/chinese_house/scene.gltf"
-          scale={45}
-          position={[0, 0, -300]}
-          rotation={[0, Math.PI / 90, 0]}
-        />
-        <Landscape />
-      </Suspense>
-    </Canvas>
+        <CustomOrbitControls min={120} max={1600} />
+        <Suspense fallback={null}>
+          <Stars
+            radius={1300}
+            depth={550}
+            count={8000}
+            factor={40}
+            fade
+            speed={1}
+          />
+          <Character />
+          <SpaceShip
+            position={[0, 120, 600]}
+            size={120}
+            rotation={[0, Math.PI / 1, 0]}
+          />
+          <Building
+            scene="/models/chinese_house/scene.gltf"
+            scale={60}
+            position={[-4, 0, 0]}
+            rotation={[0, Math.PI / 5000, 0]}
+          />
+          <LandscapeModel
+            url="/models/little_game_town/scene.gltf"
+            position={[0, 3, 0]}
+            scale={10}
+          />
+          <Preload all />
+        </Suspense>
+      </Canvas>
+    </Box>
   )
 }
 
