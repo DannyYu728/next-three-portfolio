@@ -15,24 +15,20 @@ import { CelestialsObject } from '../lib/celestialObjectsArray'
 import { CustomStars } from '../lib/Models/CustomStars'
 import { CustomOrbitControls } from '../components/MyCamera'
 import { Popup } from '../components/PopUp'
-import { useRouter } from 'next/router'
 
 function Home() {
   const earthPosition = new Vector3(0, 0, 0)
   const bgColor = useColorModeValue('#202023', '#202023')
   const [showPopup, setShowPopup] = useState(false)
-  const router = useRouter()
 
-  function handlePopupAction(action) {
-    if (action === 'confirm') {
-      router.push('/project')
-    }
-    setShowPopup(false)
+  function handlePopupAction() {
+    setShowPopup(!showPopup)
   }
+
   return (
     <Box bg={bgColor}>
       {showPopup && (
-        <Popup onConfirm={handlePopupAction} onCancel={handlePopupAction} />
+        <Popup handlePopupAction={handlePopupAction} href="/project" />
       )}
       <Canvas
         style={{ width: '100vw', height: '100vh' }}
@@ -49,7 +45,7 @@ function Home() {
           radius={300}
           depth={600}
           count={6000}
-          factor={20}
+          factor={30}
           fade
           speed={1}
         />
@@ -82,7 +78,6 @@ function Home() {
             scale={[0.2, 0.2, 0.2]}
             position={[-10.5, 7.5, 2.5]}
             rotation={[0, Math.PI / 5, 0]}
-            handleClick={() => setShowPopup(true)}
           />
           <SpaceShip position={[0, 0, 0]} size={0.5} orbit />
           <SpeechBubble msg="Hi, Click me to see more!" />

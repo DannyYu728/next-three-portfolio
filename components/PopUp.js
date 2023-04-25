@@ -1,8 +1,8 @@
 import { Box, Button, Heading, Flex } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
-import Link from 'next/link'
+import NextLink from 'next/link'
 
-export function Popup({ onConfirm, onCancel }) {
+export function Popup({ handlePopupAction, href, text }) {
   const MotionBox = motion(Box)
 
   return (
@@ -26,14 +26,18 @@ export function Popup({ onConfirm, onCancel }) {
         zIndex="2"
       >
         <Heading as="h3" size="md" color="white" marginBottom="10px">
-          Do you want to enter?
+          Do you want to Enter?
         </Heading>
-        <Link href="/project">
-          <Button as="a" marginRight="10px" colorScheme="teal">
+        <NextLink href={href}>
+          <Button
+            marginRight="10px"
+            colorScheme="teal"
+            onClick={() => handlePopupAction(false)}
+          >
             Confirm
           </Button>
-        </Link>
-        <Button onClick={() => onCancel(false)} colorScheme="red">
+        </NextLink>
+        <Button onClick={() => handlePopupAction(false)} colorScheme="red">
           Cancel
         </Button>
       </MotionBox>

@@ -3,8 +3,7 @@ import { PerspectiveCamera, Stars, Preload } from '@react-three/drei'
 import { Suspense, useState } from 'react'
 import { useColorModeValue } from '@chakra-ui/react'
 import { Physics } from '@react-three/cannon'
-import { useRouter } from 'next/router'
-import {Popup} from "../components/PopUp"
+import { Popup } from '../components/PopUp'
 import { LandscapeModel } from '../lib/Models/Landscape'
 import { Character, SpaceShip, Building } from '../lib/Models/Models.js'
 import { CustomOrbitControls } from '../components/MyCamera'
@@ -14,20 +13,14 @@ import { CelestialsObject } from '../lib/celestialObjectsArray'
 function Project() {
   const dayNight = useColorModeValue('sun', 'moon')
   const [showPopup, setShowPopup] = useState(false)
-  const router = useRouter()
 
-  function handlePopupAction(action) {
-    if (action === 'confirm') {
-      router.push('/')
-    }
-    setShowPopup(false)
+  function handlePopupAction() {
+    setShowPopup(!showPopup)
   }
 
   return (
     <>
-      {showPopup && (
-        <Popup onConfirm={handlePopupAction} onCancel={handlePopupAction} />
-      )}
+      {showPopup && <Popup handlePopupAction={handlePopupAction} href="/" />}
       <Canvas
         key={dayNight}
         style={{ width: '100vw', height: '100vh' }}

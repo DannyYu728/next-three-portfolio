@@ -16,7 +16,7 @@ const Website = ({ Component, pageProps, router }) => {
             exit={{ opacity: 0, scale: 0 }}
             transition={{ duration: 1, delay: 0.25 }}
           >
-            <Component {...pageProps} />
+            <Component {...pageProps} router={router} />
           </motion.div>
         </AnimatePresence>
       </Layout>
