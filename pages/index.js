@@ -1,6 +1,6 @@
 import { Canvas } from '@react-three/fiber'
 import { PerspectiveCamera } from '@react-three/drei'
-import { Suspense } from 'react'
+import { Suspense, useState } from 'react'
 import { Vector3 } from 'three'
 import { useColorModeValue, Box } from '@chakra-ui/react'
 import {
@@ -14,12 +14,26 @@ import { SpaceShip, Building } from '../lib/Models/Models'
 import { CelestialsObject } from '../lib/celestialObjectsArray'
 import { CustomStars } from '../lib/Models/CustomStars'
 import { CustomOrbitControls } from '../components/MyCamera'
+import { Popup } from '../components/PopUp'
+import { useRouter } from 'next/router'
 
 function Home() {
   const earthPosition = new Vector3(0, 0, 0)
   const bgColor = useColorModeValue('#202023', '#202023')
+  const [showPopup, setShowPopup] = useState(false)
+  const router = useRouter()
+
+  function handlePopupAction(action) {
+    if (action === 'confirm') {
+      router.push('/project')
+    }
+    setShowPopup(false)
+  }
   return (
     <Box bg={bgColor}>
+      {showPopup && (
+        <Popup onConfirm={handlePopupAction} onCancel={handlePopupAction} />
+      )}
       <Canvas
         style={{ width: '100vw', height: '100vh' }}
         gl={{ antialias: true }}
@@ -58,15 +72,17 @@ function Home() {
           <SaturnRing />
           <Building
             scene="/models/chinese_house/scene.gltf"
-            scale={0.5}
+            scale={[0.5, 0.5, 0.5]}
             position={[-0.5, 4.85, 0]}
             rotation={[0, Math.PI / 5, 0]}
+            handleClick={() => setShowPopup(true)}
           />
           <Building
             scene="/models/guest_house/scene.gltf"
-            scale={0.2}
+            scale={[0.2, 0.2, 0.2]}
             position={[-10.5, 7.5, 2.5]}
             rotation={[0, Math.PI / 5, 0]}
+            handleClick={() => setShowPopup(true)}
           />
           <SpaceShip position={[0, 0, 0]} size={0.5} orbit />
           <SpeechBubble msg="Hi, Click me to see more!" />
