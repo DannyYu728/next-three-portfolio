@@ -34,8 +34,8 @@ function Home() {
         <CustomStars
           radius={300}
           depth={600}
-          count={5000}
-          factor={30}
+          count={6000}
+          factor={20}
           fade
           speed={1}
         />
@@ -54,7 +54,7 @@ function Home() {
             />
           ))}
           <Sun />
-          <AsteroidBelt count={4000} />
+          <AsteroidBelt count={5000} />
           <SaturnRing />
           <Building
             scene="/models/chinese_house/scene.gltf"

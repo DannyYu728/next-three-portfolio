@@ -19,6 +19,7 @@
     "@emotion/styled": "^11.10.6",
     "@react-spring/core": "^9.7.2",
     "@react-spring/three": "^9.7.2",
+    "@react-three/cannon": "^6.5.2",
     "@react-three/drei": "^9.65.4",
     "@react-three/fiber": "^8.12.2",
     "framer-motion": "^10.12.4",

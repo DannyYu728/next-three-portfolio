@@ -17,8 +17,8 @@ function Project() {
       style={{ width: '100vw', height: '100vh' }}
       gl={{ antialias: true }}
     >
-      <ambientLight intensity={0.09} />
-      <directionalLight intensity={1} position={[-2500, 800, -1000]} />
+      <ambientLight intensity={0.15} />
+      <directionalLight intensity={1.5} position={[-2500, 800, -1000]} />
       <PerspectiveCamera
         makeDefault
         near={20}
