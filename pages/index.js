@@ -28,7 +28,7 @@ function Home() {
   return (
     <Box bg={bgColor}>
       {showPopup && (
-        <Popup handlePopupAction={handlePopupAction} href="/project" />
+        <Popup handlePopupAction={handlePopupAction} href="/town" />
       )}
       <Canvas
         style={{ width: '100vw', height: '100vh' }}
@@ -80,7 +80,7 @@ function Home() {
             rotation={[0, Math.PI / 5, 0]}
           />
           <SpaceShip position={[0, 0, 0]} size={0.5} orbit />
-          <SpeechBubble msg="Hi, Click me to see more!" />
+          <SpeechBubble msg="Hi, Click me to Land!" />
         </Suspense>
       </Canvas>
     </Box>
