@@ -1,0 +1,11 @@
+Model Information:
+* title:	Asus ROG Flow X16
+* source:	https://sketchfab.com/3d-models/asus-rog-flow-x16-e542be1475624fb1aa9096c5b31f706c
+* author:	kirigami318 (https://sketchfab.com/kirigami318)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Asus ROG Flow X16" (https://sketchfab.com/3d-models/asus-rog-flow-x16-e542be1475624fb1aa9096c5b31f706c) by kirigami318 (https://sketchfab.com/kirigami318) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

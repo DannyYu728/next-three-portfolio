@@ -15,10 +15,10 @@ export function Popup({ handlePopupAction, href, text }) {
       align="center"
     >
       <MotionBox
-        initial={{ opacity: 0, scale: 0.5 }}
+        initial={{ opacity: 0, scale: 0.0 }}
         animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.5 }}
-        transition={{ duration: 0.2 }}
+        exit={{ opacity: 0, scale: 0.0 }}
+        transition={{ duration: 0.7 }}
         backgroundColor="black"
         border="1px solid black"
         padding="20px"
@@ -26,7 +26,7 @@ export function Popup({ handlePopupAction, href, text }) {
         zIndex="2"
       >
         <Heading as="h3" size="md" color="white" marginBottom="10px">
-          Do you want to Enter?
+          {text}
         </Heading>
         <NextLink href={href}>
           <Button

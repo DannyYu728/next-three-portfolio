@@ -1,0 +1,11 @@
+Model Information:
+* title:	Pusheen - I'm busy
+* source:	https://sketchfab.com/3d-models/pusheen-im-busy-d1c8c1bc1ae24227a9561db686b9faec
+* author:	porgy (https://sketchfab.com/porgy)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Pusheen - I'm busy" (https://sketchfab.com/3d-models/pusheen-im-busy-d1c8c1bc1ae24227a9561db686b9faec) by porgy (https://sketchfab.com/porgy) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

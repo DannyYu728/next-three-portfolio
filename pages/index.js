@@ -1,6 +1,6 @@
 import { Canvas } from '@react-three/fiber'
 import { PerspectiveCamera } from '@react-three/drei'
-import { Suspense, useState } from 'react'
+import { Suspense, useState, useCallback, memo } from 'react'
 import { Vector3 } from 'three'
 import { useColorModeValue, Box } from '@chakra-ui/react'
 import {
@@ -10,26 +10,18 @@ import {
   SaturnRing
 } from '../lib/Models/SpaceModels'
 import SpeechBubble from '../components/SpeechBubble'
-import { SpaceShip, Building } from '../lib/Models/Models'
+import { SpaceShip, BasicModel } from '../lib/Models/Models'
 import { CelestialsObject } from '../lib/celestialObjectsArray'
 import { CustomStars } from '../lib/Models/CustomStars'
 import { CustomOrbitControls } from '../components/MyCamera'
 import { Popup } from '../components/PopUp'
 
-function Home() {
+const Home = memo(({ handlePopupAction }) => {
   const earthPosition = new Vector3(0, 0, 0)
   const bgColor = useColorModeValue('#202023', '#202023')
-  const [showPopup, setShowPopup] = useState(false)
-
-  function handlePopupAction() {
-    setShowPopup(!showPopup)
-  }
 
   return (
     <Box bg={bgColor}>
-      {showPopup && (
-        <Popup handlePopupAction={handlePopupAction} href="/town" />
-      )}
       <Canvas
         style={{ width: '100vw', height: '100vh' }}
         gl={{ antialias: true }}
@@ -66,14 +58,14 @@ function Home() {
           <Sun />
           <AsteroidBelt count={5000} />
           <SaturnRing />
-          <Building
+          <BasicModel
             scene="/models/chinese_house/scene.gltf"
             scale={[0.5, 0.5, 0.5]}
             position={[-0.5, 4.85, 0]}
             rotation={[0, Math.PI / 5, 0]}
-            handleClick={() => setShowPopup(true)}
+            handleClick={handlePopupAction}
           />
-          <Building
+          <BasicModel
             scene="/models/guest_house/scene.gltf"
             scale={[0.2, 0.2, 0.2]}
             position={[-10.5, 7.5, 2.5]}
@@ -85,6 +77,18 @@ function Home() {
       </Canvas>
     </Box>
   )
+})
+
+function HomePageWrapper() {
+  const [showPopup, setShowPopup] = useState(false);
+  const handlePopupAction = useCallback(() => setShowPopup((prev) => !prev), [])
+
+  return (
+    <>
+      {showPopup && <Popup handlePopupAction={handlePopupAction} href="/town" text={"Enter the Town?"}/>}
+      <Home handlePopupAction={handlePopupAction} />
+    </>
+  );
 }
 
-export default Home
+export default HomePageWrapper
