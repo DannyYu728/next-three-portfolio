@@ -4,26 +4,15 @@ import { useLoader, useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { MeshBasicMaterial } from 'three'
 
-const Key = ({
-  letter,
-  position,
-  setActiveKey,
-  removeActiveKey,
-  updateField
-}) => {
-  const [color, setColor] = useState('#FFFFFF')
+const Key = ({ letter, position, updateField }) => {
   const [hovered, setHovered] = useState(false)
 
   const onMouseEnter = () => {
-    setColor('#149902')
     setHovered(true)
-    setActiveKey(letter)
   }
 
   const onMouseLeave = () => {
-    setColor('#FFFFFF')
     setHovered(false)
-    removeActiveKey()
   }
 
   const onClick = () => {
@@ -37,7 +26,7 @@ const Key = ({
   return (
     <Text
       fontSize={5}
-      color={color}
+      color={hovered ? '#149902' : '#FFFFFF'}
       anchorX="center"
       anchorY="middle"
       position={position}
@@ -51,17 +40,15 @@ const Key = ({
 }
 
 export const VirtualKeyboard = ({ position, rotation, scale }) => {
-  const [activeKey, setActiveKey] = useState(null)
   const [activeField, setActiveField] = useState('message')
   const [message, setMessage] = useState('')
   const [sender, setSender] = useState('')
   const [shiftPressed, setShiftPressed] = useState(false)
-  const [activeLine, setActiveLine] = useState([0, 0, 0])
+  const messageBackgroundRef = useRef();
+  const senderBackgroundRef = useRef();
 
-  // Add this inside the VirtualKeyboard component
-  const inputMaterial = new MeshBasicMaterial({ color: '#b3d0f5' })
-  const messageRef = useRef()
-  const senderRef = useRef()
+
+  const inputMaterial = new MeshBasicMaterial({ color: 'rgba(87,140,183,1)' })
 
   const gradientTexture = useLoader(
     THREE.TextureLoader,
@@ -81,9 +68,11 @@ export const VirtualKeyboard = ({ position, rotation, scale }) => {
     ['Shift', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/']
   ]
 
-  const removeActiveKey = () => {
-    setActiveKey(null)
-  }
+  const [hovered, setHovered] = useState(false);
+  const enableHover = (hover) => {
+    setHovered(hover);
+  };
+
 
   const updateField = key => {
     if (key === 'Shift') {
@@ -97,8 +86,9 @@ export const VirtualKeyboard = ({ position, rotation, scale }) => {
     }
 
     if (key === 'Enter') {
-      // Send a post request to the backend
       console.log('Sending message:', message, 'from sender:', sender)
+      setMessage('')
+      setSender('')
       return
     }
 
@@ -109,43 +99,27 @@ export const VirtualKeyboard = ({ position, rotation, scale }) => {
     }
   }
 
-  const handleTab = e => {
-    if (e.key === 'Tab') {
-      e.preventDefault()
-      setActiveField(prevActiveField =>
-        prevActiveField === 'message' ? 'sender' : 'message'
-      )
-    }
-  }
-  const handleKeyClick = (key) => {
-    if (key === "Enter") {
-      // Send the message by making a POST request to the backend
-      console.log("Sending message:", message, "from sender:", sender);
-  
-      // Clear the input fields
-      setMessage("");
-      setSender("");
-    } else {
-      if (activeField === "message" && message.length < 100) {
-        setMessage((prevMessage) => prevMessage + key);
-      } else if (activeField === "sender" && sender.length < 20) {
-        setSender((prevSender) => prevSender + key);
-      }
-    }
-  };
-
-  
   const lineRef = useRef()
   useFrame(({ clock }) => {
     if (lineRef.current) {
       lineRef.current.material.opacity =
         Math.sin(clock.getElapsedTime() * 4) > 0 ? 1 : 0
-      const linePosition = activeField === 'message' ? [23, 10, 2] : [9, -10, 2]
+      const linePosition = activeField === 'message' ? [0, 25, 2] : [0, 15, 2]
       lineRef.current.position.set(...linePosition)
     }
   })
 
+  useFrame(() => {
+    if (messageBackgroundRef.current) {
+      messageBackgroundRef.current.scale.x = Math.max(1, message.length * 0.1);
+    }
+    if (senderBackgroundRef.current) {
+      senderBackgroundRef.current.scale.x = Math.max(1, sender.length * 0.1);
+    }
+  });
+
   useEffect(() => {
+    document.body.style.cursor = hovered ? "pointer" : "auto";
     const handleKeyDown = e => {
       if (e.key === 'Tab') {
         e.preventDefault()
@@ -153,10 +127,7 @@ export const VirtualKeyboard = ({ position, rotation, scale }) => {
           prevActiveField === 'message' ? 'sender' : 'message'
         )
       } else if (e.key === 'Enter') {
-        // Send the message by making a POST request to the backend
         console.log('Sending message:', message, 'from sender:', sender)
-
-        // Clear the input fields
         setMessage('')
         setSender('')
       } else if (e.key === 'CapsLock') {
@@ -167,13 +138,12 @@ export const VirtualKeyboard = ({ position, rotation, scale }) => {
         setSender(prevSender => prevSender + e.key)
       }
     }
-
     window.addEventListener('keydown', handleKeyDown)
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown)
     }
-  }, [message, sender, activeField])
+  }, [message, sender, activeField, hovered])
 
   return (
     <group position={position} rotation={rotation} scale={scale}>
@@ -182,36 +152,38 @@ export const VirtualKeyboard = ({ position, rotation, scale }) => {
         material={CustomGradientMaterial}
         position={[2, -10, 0]}
       />
-      <Box args={[50, 5, 1]} position={[0, 10, -1]} material={inputMaterial} />
-      <Box args={[20, 5, 1]} position={[0, -10, -1]} material={inputMaterial} />
+      <Box ref={messageBackgroundRef} args={[31, 5, 1]} position={[0, 25, 0]} material={inputMaterial} transparent />
+      <Box ref={senderBackgroundRef} args={[31, 5, 1]} position={[0, 15, 0]} material={inputMaterial} transparent/>
       <Line
         ref={lineRef}
         points={[new THREE.Vector3(0, 2.5, 0), new THREE.Vector3(0, -2.5, 0)]}
         color="#000"
       />
       <Text
-        ref={messageRef}
         fontSize={5}
         color="white"
         anchorX="center"
         anchorY="middle"
-        position={[-35, 20, 0]}
+        position={[0, 25, 1]}
         background="rgba(0, 128, 255, 0.1)"
         padding={0.5}
         onPointerDown={() => setActiveField('message')}
+        onPointerOver={() => enableHover(true)}
+        onPointerOut={() => enableHover(false)}
       >
         {message}
       </Text>
       <Text
-        ref={senderRef}
         fontSize={5}
         color="white"
         anchorX="center"
         anchorY="middle"
-        position={[-35, 10, 0]}
+        position={[0, 15, 1]}
         background="rgba(0, 128, 255, 0.1)"
         padding={0.5}
         onPointerDown={() => setActiveField('sender')}
+        onPointerOver={() => enableHover(true)}
+        onPointerOut={() => enableHover(false)}
       >
         {sender}
       </Text>
@@ -221,8 +193,6 @@ export const VirtualKeyboard = ({ position, rotation, scale }) => {
             key={letter}
             letter={shiftPressed ? letter.toUpperCase() : letter}
             position={[index * 7 - 40, -rowIndex * 9, 2]}
-            setActiveKey={setActiveKey}
-            removeActiveKey={removeActiveKey}
             updateField={updateField}
           />
         ))
