@@ -59,7 +59,7 @@ const Contact = () => {
           position={[0, -50, 0]}
           rotation={[0, 1.55, 0]}
         />
-        <VirtualKeyboard position={[10, -100, -20]} rotation={[0, 1.55, 0]} />
+        <VirtualKeyboard position={[10, -100, -20]} rotation={[0, 1.55, 0]} scale={1.6} />
         {latestMessages.map((message, index) => (
           <TextBubble
             key={index}
