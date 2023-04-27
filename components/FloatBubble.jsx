@@ -7,7 +7,7 @@ const FloatingSphere = ({
   message,
   position,
   size,
-  color = 'rgba(50, 50, 50, 0.5)',
+  color = 'rgba(50, 50, 50, 1)',
   text = 'white'
 }) => {
   const [hover, setHover] = useState(false)
