@@ -7,7 +7,6 @@ export const TextBubble = ({ message, position, color }) => {
   return (
     <group position={position} rotation={[0, 1.55, 0]}>
       <Text
-        font="/fonts/mplus1rounded1c-regular.json"
         fontSize={5}
         color="white"
         lineHeight={1.2}
@@ -15,7 +14,7 @@ export const TextBubble = ({ message, position, color }) => {
         textAlign="left"
         anchorX="left"
         anchorY="middle"
-        position={[-15, 100, -10]}
+        position={[-15, 130, -10]}
         onSync={text => {
           const width =
             text.geometry.boundingBox.max.x - text.geometry.boundingBox.min.x
@@ -36,12 +35,11 @@ export const TextBubble = ({ message, position, color }) => {
         </RoundedBox>
       </Text>
       <Text
-        font="/fonts/mplus1rounded1c-regular.json"
         fontSize={2.5}
         color="white"
         anchorX="left"
         anchorY="bottom"
-        position={[-14.5, 92.5, -9]}
+        position={[-14.5, 122.5, -9]}
       >
         {message.sender} - {message.date}
       </Text>

@@ -1,10 +1,38 @@
-import { Line, Box, Text, Plane } from '@react-three/drei'
+import { Line, Text, RoundedBox, Cone } from '@react-three/drei'
 import { useState, useEffect, useRef } from 'react'
 import { useLoader, useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
-import { MeshBasicMaterial } from 'three'
+import { useColorModeValue } from '@chakra-ui/react'
 
-const Key = ({ letter, position, updateField }) => {
+const useKeyPress = targetKey => {
+  const [keyPressed, setKeyPressed] = useState(false)
+
+  const handleKeyDown = ({ key }) => {
+    if (key === targetKey) {
+      setKeyPressed(true)
+    }
+  }
+
+  const handleKeyUp = ({ key }) => {
+    if (key === targetKey) {
+      setKeyPressed(false)
+    }
+  }
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown)
+    window.addEventListener('keyup', handleKeyUp)
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+      window.removeEventListener('keyup', handleKeyUp)
+    }
+  }, [])
+
+  return keyPressed
+}
+
+const Key = ({ letter, position, updateField, active }) => {
   const [hovered, setHovered] = useState(false)
 
   const onMouseEnter = () => {
@@ -26,13 +54,16 @@ const Key = ({ letter, position, updateField }) => {
   return (
     <Text
       fontSize={5}
-      color={hovered ? '#149902' : '#FFFFFF'}
+      color={hovered || active ? '#149902' : '#FFFFFF'}
       anchorX="center"
       anchorY="middle"
       position={position}
       onPointerEnter={onMouseEnter}
       onPointerLeave={onMouseLeave}
       onPointerDown={onClick}
+      outlineWidth={0.1}
+      outlineColor={'green'}
+      outlineBlur={1}
     >
       {letter}
     </Text>
@@ -44,37 +75,57 @@ export const VirtualKeyboard = ({ position, rotation, scale }) => {
   const [message, setMessage] = useState('')
   const [sender, setSender] = useState('')
   const [shiftPressed, setShiftPressed] = useState(false)
-  const messageBackgroundRef = useRef();
-  const senderBackgroundRef = useRef();
-
-
-  const inputMaterial = new MeshBasicMaterial({ color: 'rgba(87,140,183,1)' })
+  const messageBackgroundRef = useRef()
+  const senderBackgroundRef = useRef()
 
   const gradientTexture = useLoader(
     THREE.TextureLoader,
     '/assets/bluegradient.jpg'
   )
-
-  const CustomGradientMaterial = new THREE.MeshBasicMaterial({
-    map: gradientTexture,
+  const inputMaterial = new THREE.MeshBasicMaterial({
+    color: 'rgba(108, 122, 137, 0.1)',
     transparent: true,
     side: THREE.DoubleSide,
     opacity: 0.4
   })
 
+  const CustomGradientMaterial = new THREE.MeshBasicMaterial({
+    map: gradientTexture,
+    transparent: true,
+    side: THREE.DoubleSide,
+    opacity: 0.1
+  })
+  const bgColor = useColorModeValue(inputMaterial, CustomGradientMaterial)
+  const textColor = useColorModeValue("black", "white")
+
   const keysLayout = [
+    ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'BKSP'],
     ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\\'],
     ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', "'", 'Enter'],
     ['Shift', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/']
   ]
 
-  const [hovered, setHovered] = useState(false);
-  const enableHover = (hover) => {
-    setHovered(hover);
-  };
+  const shiftLayout = [
+    ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', 'BKSP'],
+    ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}', '|'],
+    ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', '"', 'Enter'],
+    ['Shift', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', '<', '>', '?']
+  ]
 
+  const [hovered, setHovered] = useState(false)
+  const enableHover = hover => {
+    setHovered(hover)
+  }
 
   const updateField = key => {
+    if (key === 'BKSP') {
+      if (activeField === 'message') {
+        setMessage(prevMessage => prevMessage.slice(0, -1))
+      } else if (activeField === 'sender') {
+        setSender(prevSender => prevSender.slice(0, -1))
+      }
+      return
+    }
     if (key === 'Shift') {
       setShiftPressed(!shiftPressed)
       return
@@ -104,38 +155,49 @@ export const VirtualKeyboard = ({ position, rotation, scale }) => {
     if (lineRef.current) {
       lineRef.current.material.opacity =
         Math.sin(clock.getElapsedTime() * 4) > 0 ? 1 : 0
-      const linePosition = activeField === 'message' ? [0, 25, 2] : [0, 15, 2]
+      const offsetX =
+        activeField === 'message' ? message.length * 1.2 : sender.length * 1.2
+      const linePosition =
+        activeField === 'message' ? [offsetX + 2, 23, 6] : [offsetX + 2, 15, 8]
       lineRef.current.position.set(...linePosition)
     }
   })
 
   useFrame(() => {
     if (messageBackgroundRef.current) {
-      messageBackgroundRef.current.scale.x = Math.max(1, message.length * 0.1);
+      messageBackgroundRef.current.scale.x = Math.max(1, message.length * 0.1)
     }
     if (senderBackgroundRef.current) {
-      senderBackgroundRef.current.scale.x = Math.max(1, sender.length * 0.1);
+      senderBackgroundRef.current.scale.x = Math.max(1, sender.length * 0.1)
     }
-  });
+  })
 
   useEffect(() => {
-    document.body.style.cursor = hovered ? "pointer" : "auto";
+    document.body.style.cursor = hovered ? 'pointer' : 'auto'
     const handleKeyDown = e => {
-      if (e.key === 'Tab') {
-        e.preventDefault()
-        setActiveField(prevActiveField =>
-          prevActiveField === 'message' ? 'sender' : 'message'
-        )
-      } else if (e.key === 'Enter') {
-        console.log('Sending message:', message, 'from sender:', sender)
-        setMessage('')
-        setSender('')
-      } else if (e.key === 'CapsLock') {
-        setShiftPressed(prevShiftPressed => !prevShiftPressed)
-      } else if (activeField === 'message' && message.length < 100) {
-        setMessage(prevMessage => prevMessage + e.key)
-      } else if (activeField === 'sender' && sender.length < 20) {
-        setSender(prevSender => prevSender + e.key)
+      const specialKeys = ['Backspace', 'Shift', 'Tab', 'CapsLock', 'Enter', 'Escape', 'Alt', 'Meta', 'Control', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']
+
+      if (specialKeys.includes(e.key)) {
+        if (e.key === 'Backspace') {
+          updateField('BKSP')
+        } else if (e.key === 'Tab') {
+          e.preventDefault()
+          setActiveField(prevActiveField =>
+            prevActiveField === 'message' ? 'sender' : 'message'
+          )
+        } else if (e.key === 'Enter') {
+          console.log('Sending message:', message, 'from sender:', sender)
+          setMessage('')
+          setSender('')
+        } else if (e.key === 'CapsLock') {
+          setShiftPressed(prevShiftPressed => !prevShiftPressed)
+        }
+      } else {
+        if (activeField === 'message' && message.length < 100) {
+          setMessage(prevMessage => prevMessage + e.key)
+        } else if (activeField === 'sender' && sender.length < 20) {
+          setSender(prevSender => prevSender + e.key)
+        }
       }
     }
     window.addEventListener('keydown', handleKeyDown)
@@ -144,27 +206,48 @@ export const VirtualKeyboard = ({ position, rotation, scale }) => {
       window.removeEventListener('keydown', handleKeyDown)
     }
   }, [message, sender, activeField, hovered])
-
   return (
     <group position={position} rotation={rotation} scale={scale}>
-      <Plane
-        args={[100, 40]}
-        material={CustomGradientMaterial}
-        position={[2, -10, 0]}
+      <Cone
+        args={[5, 5]}
+        scale={[3, 1.2, 0.5]}
+        material={bgColor}
+        position={[2, 32, 0]}
       />
-      <Box ref={messageBackgroundRef} args={[31, 5, 1]} position={[0, 25, 0]} material={inputMaterial} transparent />
-      <Box ref={senderBackgroundRef} args={[31, 5, 1]} position={[0, 15, 0]} material={inputMaterial} transparent/>
+      <RoundedBox
+        args={[125, 40]}
+        material={bgColor}
+        position={[2, -10, 7]}
+        radius={3}
+        smoothness={5}
+      />
+      <RoundedBox
+        ref={messageBackgroundRef}
+        args={[31, 5, 1]}
+        position={[2.5, 23, 2.5]}
+        material={bgColor}
+        radius={2}
+        smoothness={5}
+      />
+      <RoundedBox
+        ref={senderBackgroundRef}
+        args={[31, 5, 1]}
+        position={[2.5, 15, 4.5]}
+        material={bgColor}
+        radius={2}
+        smoothness={5}
+      />
       <Line
         ref={lineRef}
         points={[new THREE.Vector3(0, 2.5, 0), new THREE.Vector3(0, -2.5, 0)]}
-        color="#000"
+        color="green"
       />
       <Text
         fontSize={5}
         color="white"
         anchorX="center"
         anchorY="middle"
-        position={[0, 25, 1]}
+        position={[2.5, 23, 6.5]}
         background="rgba(0, 128, 255, 0.1)"
         padding={0.5}
         onPointerDown={() => setActiveField('message')}
@@ -173,12 +256,18 @@ export const VirtualKeyboard = ({ position, rotation, scale }) => {
       >
         {message}
       </Text>
+      <Text position={[-8, 27, 5.5]} fontSize={2} color={textColor}>
+        Message:
+      </Text>
+      <Text position={[-9.4, 19, 5.5]} fontSize={2} color={textColor}>
+        Name:
+      </Text>
       <Text
         fontSize={5}
         color="white"
         anchorX="center"
         anchorY="middle"
-        position={[0, 15, 1]}
+        position={[2.5, 15, 8.5]}
         background="rgba(0, 128, 255, 0.1)"
         padding={0.5}
         onPointerDown={() => setActiveField('sender')}
@@ -188,14 +277,21 @@ export const VirtualKeyboard = ({ position, rotation, scale }) => {
         {sender}
       </Text>
       {keysLayout.map((row, rowIndex) =>
-        row.map((letter, index) => (
-          <Key
-            key={letter}
-            letter={shiftPressed ? letter.toUpperCase() : letter}
-            position={[index * 7 - 40, -rowIndex * 9, 2]}
-            updateField={updateField}
-          />
-        ))
+        row.map((letter, index) => {
+          const active = useKeyPress(letter)
+          const letterToDisplay = shiftPressed
+            ? shiftLayout[rowIndex][index]
+            : letter
+          return (
+            <Key
+              key={letter}
+              letter={letterToDisplay}
+              active={active}
+              position={[index * 8.1 - 47, -rowIndex * 9 + 3.5, 12]}
+              updateField={updateField}
+            />
+          )
+        })
       )}
     </group>
   )
