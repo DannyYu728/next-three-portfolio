@@ -1,7 +1,7 @@
 import { Text, RoundedBox } from '@react-three/drei'
-import { useState } from 'react';
+import { useState } from 'react'
 
-export const TextBubble = ({ message, position, color, onHeightUpdate }) => {
+export const TextBubble = ({ message, position, color }) => {
   const [boxSize, setBoxSize] = useState([50, 8, 5])
 
   return (
@@ -16,11 +16,12 @@ export const TextBubble = ({ message, position, color, onHeightUpdate }) => {
         anchorX="left"
         anchorY="middle"
         position={[-15, 100, -10]}
-        onSync={(text) => {
-          const width = text.geometry.boundingBox.max.x - text.geometry.boundingBox.min.x;
-          const height = text.geometry.boundingBox.max.y - text.geometry.boundingBox.min.y;
-          setBoxSize([width + 5, height + 4, 5]);
-          onHeightUpdate(height + 4 + 2.5);
+        onSync={text => {
+          const width =
+            text.geometry.boundingBox.max.x - text.geometry.boundingBox.min.x
+          const height =
+            text.geometry.boundingBox.max.y - text.geometry.boundingBox.min.y
+          setBoxSize([width + 5, height + 4, 5])
         }}
       >
         {message.message}
@@ -29,7 +30,7 @@ export const TextBubble = ({ message, position, color, onHeightUpdate }) => {
           radius={3}
           smoothness={5}
           creaseAngle={5}
-          position={[(boxSize[0] / 2) + -3, 0, -3]}
+          position={[boxSize[0] / 2 + -3, 0, -3]}
         >
           <meshBasicMaterial color={color} opacity={0.35} transparent />
         </RoundedBox>
