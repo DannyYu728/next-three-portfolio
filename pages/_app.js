@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import Layout from '../components/layouts/main'
 import theme from '../lib/theme'
-import '../styles/global.css'
 
 const Website = ({ Component, pageProps, router }) => {
   const route = useRouter()
