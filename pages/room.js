@@ -1,18 +1,15 @@
 import { Canvas } from '@react-three/fiber'
 import { PerspectiveCamera, Preload } from '@react-three/drei'
 import { Suspense } from 'react'
-import { useColorModeValue } from '@chakra-ui/react'
 import { LandscapeModel } from '../lib/Models/Landscape'
 import { BasicModel } from '../lib/Models/Models'
 import { CustomOrbitControls } from '../components/MyCamera'
 import FloatingSphere from '../components/FloatBubble'
 
 const Room = () => {
-  const dayNight = useColorModeValue('sun', 'moon')
 
   return (
     <Canvas
-      key={dayNight}
       style={{ width: '100vw', height: 'calc(100vh - 80px)' }}
       gl={{ antialias: true }}
     >

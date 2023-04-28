@@ -2,7 +2,7 @@ import { Canvas } from '@react-three/fiber'
 import { PerspectiveCamera, Stars, Preload, Box } from '@react-three/drei'
 import { Suspense, useState, memo, useCallback } from 'react'
 import { useColorModeValue } from '@chakra-ui/react'
-import { MeshBasicMaterial, DoubleSide } from 'three'
+import { MeshBasicMaterial } from 'three'
 import { Popup } from '../components/PopUp'
 import { LandscapeModel } from '../lib/Models/Landscape'
 import { Character, SpaceShip, BasicModel } from '../lib/Models/Models.js'
@@ -17,8 +17,7 @@ const Town = memo(({ handlePopupAction }) => {
   const inputMaterial = new MeshBasicMaterial({
     color: 'rgb(108, 122, 137)',
     transparent: true,
-    side: DoubleSide,
-    opacity: 0.2
+    opacity: 0.0
   })
 
   return (
