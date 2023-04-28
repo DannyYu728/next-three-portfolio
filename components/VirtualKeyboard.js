@@ -1,4 +1,4 @@
-import { Line, Text, RoundedBox, Cone } from '@react-three/drei'
+import { Line, Text, Cone, Box } from '@react-three/drei'
 import { useState, useEffect, useRef } from 'react'
 import { useLoader, useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
@@ -70,7 +70,7 @@ const Key = ({ letter, position, updateField, active }) => {
   )
 }
 
-export const VirtualKeyboard = ({ position, rotation, scale }) => {
+export const VirtualKeyboard = ({ position, rotation, scale, storeMessage }) => {
   const [activeField, setActiveField] = useState('message')
   const [message, setMessage] = useState('')
   const [sender, setSender] = useState('')
@@ -83,7 +83,7 @@ export const VirtualKeyboard = ({ position, rotation, scale }) => {
     '/assets/bluegradient.jpg'
   )
   const inputMaterial = new THREE.MeshBasicMaterial({
-    color: 'rgba(108, 122, 137, 0.1)',
+    color: 'rgb(108, 122, 137)',
     transparent: true,
     side: THREE.DoubleSide,
     opacity: 0.4
@@ -137,7 +137,7 @@ export const VirtualKeyboard = ({ position, rotation, scale }) => {
     }
 
     if (key === 'Enter') {
-      console.log('Sending message:', message, 'from sender:', sender)
+      storeMessage(message, sender);
       setMessage('')
       setSender('')
       return
@@ -200,7 +200,7 @@ export const VirtualKeyboard = ({ position, rotation, scale }) => {
             prevActiveField === 'message' ? 'sender' : 'message'
           )
         } else if (e.key === 'Enter') {
-          console.log('Sending message:', message, 'from sender:', sender)
+          storeMessage(message, sender);
           setMessage('')
           setSender('')
         } else if (e.key === 'Shift') {
@@ -249,28 +249,22 @@ export const VirtualKeyboard = ({ position, rotation, scale }) => {
         material={bgColor}
         position={[2, 32, 0]}
       />
-      <RoundedBox
+      <Box
         args={[125, 40]}
         material={bgColor}
         position={[2, -10, 7]}
-        radius={3}
-        smoothness={5}
       />
-      <RoundedBox
+      <Box
         ref={messageBackgroundRef}
         args={[31, 5, 1]}
         position={[2.5, 23, 2.5]}
         material={bgColor}
-        radius={2}
-        smoothness={5}
       />
-      <RoundedBox
+      <Box
         ref={senderBackgroundRef}
         args={[31, 5, 1]}
         position={[2.5, 15, 4.5]}
         material={bgColor}
-        radius={2}
-        smoothness={5}
       />
       <Line
         ref={lineRef}

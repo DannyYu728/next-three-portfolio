@@ -1,4 +1,4 @@
-import { Text, RoundedBox } from '@react-three/drei'
+import { Text, Box } from '@react-three/drei'
 import { useState } from 'react'
 
 export const TextBubble = ({ message, position, color }) => {
@@ -24,15 +24,12 @@ export const TextBubble = ({ message, position, color }) => {
         }}
       >
         {message.message}
-        <RoundedBox
+        <Box
           args={boxSize}
-          radius={3}
-          smoothness={5}
-          creaseAngle={5}
           position={[boxSize[0] / 2 + -3, 0, -3]}
         >
           <meshBasicMaterial color={color} opacity={0.35} transparent />
-        </RoundedBox>
+        </Box>
       </Text>
       <Text
         fontSize={2.5}
@@ -41,7 +38,7 @@ export const TextBubble = ({ message, position, color }) => {
         anchorY="bottom"
         position={[-14.5, 122.5, -9]}
       >
-        {message.sender} - {message.date}
+        {message.sender} - {message.createdAt.toDate().toLocaleString()}
       </Text>
     </group>
   )

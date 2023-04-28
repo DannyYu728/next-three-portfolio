@@ -1,41 +1,48 @@
 import { Canvas } from '@react-three/fiber'
 import { PerspectiveCamera, Preload } from '@react-three/drei'
-import { Suspense } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useColorModeValue } from '@chakra-ui/react'
 import { BasicModel } from '../lib/Models/Models'
 import { CustomOrbitControls } from '../components/MyCamera'
 import { TextBubble } from '../components/TextBubble'
 import { VirtualKeyboard } from '../components/VirtualKeyboard'
+import db from "../lib/firebase";
+import { collection, getDocs, query, orderBy, limit, addDoc } from 'firebase/firestore'; 
 
 const Contact = () => {
   const dayNight = useColorModeValue('sun', 'moon')
-  const messages = [
-    { message: 'Hello!', date: '2023-04-26', sender: 'Alice' },
-    { message: 'How are you?', date: '2023-04-26', sender: 'Bob' },
-    {
-      message:
-        'Nice to Nice to mah. I work for Blah. Plr Bl23h. Please cav ds vsdvlkdsvlksd vl ll1111 me At 333-333-3333 NOMORE',
-      date: '2023-04-26',
-      sender: 'Charlie'
-    },
-    {
-      message:
-        'Nice to Nlah Blah. I work for Blah. Please cav ds vsdvlkdsvlksd vl ll1111 me At 333-333-3333 NOMORE',
-      date: '2023-04-26',
-      sender: 'Charlie'
-    },
-    { message: 'Nice to meet you!', date: '2023-04-26', sender: 'Charlie' },
-    { message: 'Nice to meet you!', date: '2023-04-26', sender: 'Charlie' },
-    { message: 'Nice to meet you!', date: '2023-04-22', sender: 'Charlie' },
-    { message: 'Nice to meet you!', date: '2023-04-26', sender: 'Charlie' },
-    { message: 'Nice to meet you!', date: '2023-04-25', sender: 'Charlie' },
-    { message: 'Nice to meet you!', date: '2023-04-27', sender: 'Charlie' },
-    { message: 'Nice to meet you!', date: '2023-04-20', sender: 'SUnny' }
-  ]
-  const sortedMessages = messages.sort(
-    (a, b) => new Date(b.date) - new Date(a.date)
-  )
-  const latestMessages = sortedMessages.slice(0, 10).reverse()
+  const [messages, setMessages] = useState([]);
+
+  const storeMessage = async (message, sender) => {
+    try {
+      const createdAt = new Date();
+      const docRef = await addDoc(collection(db, 'messages'), {
+        message: message,
+        sender: sender,
+        createdAt: createdAt
+      });
+      console.log("Message stored successfully");
+    } catch (error) {
+      console.error("Error storing message: ", error);
+    }
+  };
+
+  const fetchMessages = async () => {
+    try {
+      const messagesRef = collection(db, 'messages');
+      const messagesQuery = query(messagesRef, orderBy('createdAt', 'desc'), limit(10));
+      const messageSnapshot = await getDocs(messagesQuery);
+      const messages = messageSnapshot.docs.map((doc) => doc.data());
+      messages.reverse()
+      setMessages(messages);
+    } catch (error) {
+      console.error('Error fetching messages: ', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchMessages();
+  }, []);
 
   return (
     <Canvas
@@ -59,8 +66,8 @@ const Contact = () => {
           position={[0, -20, 0]}
           rotation={[0, 1.55, 0]}
         />
-        <VirtualKeyboard position={[0, -100, 0]} rotation={[0, 1.55, 0]} scale={[2.5,2.2,1]} />
-        {latestMessages.map((message, index) => (
+        <VirtualKeyboard position={[0, -100, 0]} rotation={[0, 1.55, 0]} scale={[2.5, 2.2, 1]} storeMessage={storeMessage} />
+        {messages.map((message, index) => (
           <TextBubble
             key={index}
             message={message}
