@@ -54,9 +54,10 @@ const Navbar = ({ path }) => {
     )
   }
 
-  const MenuLink = forwardRef((props, ref) => (
-    <MotionChakraLink ref={ref} as={NextLink} {...props} />
-  ))
+  const MenuLink = forwardRef((props, ref) => {
+    return <MotionChakraLink ref={ref} as={NextLink} {...props} />
+  })
+  MenuLink.displayName = 'MenuLink';
 
   const Items = [
     { id: '0', href: '/', text: 'Home' },
@@ -135,5 +136,4 @@ const Navbar = ({ path }) => {
     </Flex>
   )
 }
-MenuLink.displayName = 'MenuLink'
 export default Navbar
