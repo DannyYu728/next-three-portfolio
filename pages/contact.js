@@ -1,53 +1,63 @@
 import { Canvas } from '@react-three/fiber'
-import { PerspectiveCamera, Preload } from '@react-three/drei'
+import { PerspectiveCamera, Preload, Text } from '@react-three/drei'
 import { Suspense, useEffect, useState } from 'react'
-import { useColorModeValue } from '@chakra-ui/react'
 import { BasicModel } from '../lib/Models/Models'
 import { CustomOrbitControls } from '../components/MyCamera'
 import { TextBubble } from '../components/TextBubble'
 import { VirtualKeyboard } from '../components/VirtualKeyboard'
-import db from "../lib/firebase";
-import { collection, getDocs, query, orderBy, limit, addDoc } from 'firebase/firestore'; 
+import db from '../lib/firebase'
+import {
+  collection,
+  getDocs,
+  query,
+  orderBy,
+  limit,
+  addDoc
+} from 'firebase/firestore'
 
 const Contact = () => {
-  const dayNight = useColorModeValue('sun', 'moon')
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState([])
+  const [errorMessage, setErrorMessage] = useState(null)
 
   const storeMessage = async (message, sender) => {
     try {
-      const createdAt = new Date();
-      const docRef = await addDoc(collection(db, 'messages'), {
+      const createdAt = new Date()
+      const data = {
         message: message,
         sender: sender,
-        createdAt: createdAt
-      });
-      console.log("Message stored successfully");
+        createdAt: createdAt.toLocaleString()
+      }
+      const docRef = await addDoc(collection(db, 'messages'), data)
+      setMessages(prev => [...prev, data])
+      console.log('Message stored successfully', docRef)
     } catch (error) {
-      console.error("Error storing message: ", error);
+      console.error('Error storing message: ', error)
     }
-  };
+  }
 
   const fetchMessages = async () => {
     try {
-      const messagesRef = collection(db, 'messages');
-      const messagesQuery = query(messagesRef, orderBy('createdAt', 'desc'), limit(10));
-      const messageSnapshot = await getDocs(messagesQuery);
-      const messages = messageSnapshot.docs.map((doc) => doc.data());
+      const messagesRef = collection(db, 'messages')
+      const messagesQuery = query(
+        messagesRef,
+        orderBy('createdAt', 'desc'),
+        limit(10)
+      )
+      const messageSnapshot = await getDocs(messagesQuery)
+      const messages = messageSnapshot.docs.map(doc => doc.data())
       messages.reverse()
-      setMessages(messages);
+      setMessages(messages)
     } catch (error) {
-      console.error('Error fetching messages: ', error);
+      console.error('Error fetching messages: ', error)
     }
-  };
+  }
 
   useEffect(() => {
-    fetchMessages();
-  }, []);
-
+    fetchMessages()
+  }, [])
   return (
     <Canvas
-      key={dayNight}
-      style={{ width: '100vw', height: '100vh' }}
+      style={{ width: '100vw', height: 'calc(100vh - 80px)' }}
       gl={{ antialias: true }}
     >
       <ambientLight intensity={5} />
@@ -66,7 +76,13 @@ const Contact = () => {
           position={[0, -20, 0]}
           rotation={[0, 1.55, 0]}
         />
-        <VirtualKeyboard position={[0, -100, 0]} rotation={[0, 1.55, 0]} scale={[2.5, 2.2, 1]} storeMessage={storeMessage} />
+        <VirtualKeyboard
+          position={[0, -100, 0]}
+          rotation={[0, 1.55, 0]}
+          scale={[2.5, 2.2, 1]}
+          storeMessage={storeMessage}
+          setErrorMessage={setErrorMessage}
+        />
         {messages.map((message, index) => (
           <TextBubble
             key={index}
@@ -75,6 +91,16 @@ const Contact = () => {
             color={index % 2 === 0 ? '#3171a9' : '#149902'}
           />
         ))}
+        {errorMessage && (
+          <Text
+            position={[20, 20, 0]}
+            rotation={[0, 1.55, 0]}
+            fontSize={10}
+            color="red"
+          >
+            {errorMessage}
+          </Text>
+        )}
         <Preload all />
       </Suspense>
     </Canvas>

@@ -15,7 +15,7 @@ const Town = memo(({ handlePopupAction }) => {
   const dayNight = useColorModeValue('sun', 'moon')
 
   const inputMaterial = new MeshBasicMaterial({
-    color: 'rgba(108, 122, 137, 1)',
+    color: 'rgb(108, 122, 137)',
     transparent: true,
     side: DoubleSide,
     opacity: 0.2
@@ -24,7 +24,7 @@ const Town = memo(({ handlePopupAction }) => {
   return (
     <Canvas
       key={dayNight}
-      style={{ width: '100vw', height: '100vh' }}
+      style={{ width: '100vw', height: 'calc(100vh - 80px)' }}
       gl={{ antialias: true }}
     >
       <ambientLight intensity={0.15} />
@@ -68,6 +68,7 @@ const Town = memo(({ handlePopupAction }) => {
           scale={[50, 50, 50]}
           position={[-4, 0, 0]}
           rotation={[0, Math.PI / 5000, 0]}
+          hoverEnabled={true}
         />
         <SpeechBubble
           msg="Hi, Click the house to Enter!"

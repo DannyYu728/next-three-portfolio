@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Sphere, Text } from '@react-three/drei'
 import { useThree } from '@react-three/fiber'
 import { useRouter } from 'next/router'
@@ -17,6 +17,11 @@ const FloatingSphere = ({
   const handleClick = () => {
     router.push(link)
   }
+
+  useEffect(() => {
+    document.body.style.cursor = hover ? 'pointer' : 'auto'
+    return () => (document.body.style.cursor = 'auto')
+  }, [hover])
 
   return (
     <group

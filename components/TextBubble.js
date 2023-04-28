@@ -38,7 +38,7 @@ export const TextBubble = ({ message, position, color }) => {
         anchorY="bottom"
         position={[-14.5, 122.5, -9]}
       >
-        {message.sender} - {message.createdAt.toDate().toLocaleString()}
+        {message.sender} - {message.createdAt}
       </Text>
     </group>
   )

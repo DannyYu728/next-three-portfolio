@@ -1,92 +1,119 @@
 import { Canvas } from '@react-three/fiber'
-import { PerspectiveCamera, Stars, Preload } from '@react-three/drei'
-import { Suspense, useState, memo, useCallback } from 'react'
-import { useColorModeValue } from '@chakra-ui/react'
-import { Popup } from '../components/PopUp'
-import { LandscapeModel } from '../lib/Models/Landscape'
-import { Character, SpaceShip, BasicModel } from '../lib/Models/Models.js'
+import {
+  PerspectiveCamera,
+  Preload,
+  Cone,
+  Image,
+  Html,
+  Text
+} from '@react-three/drei'
+import { Suspense, useState } from 'react'
+import { Button, ButtonGroup, VStack } from '@chakra-ui/react'
+import { BasicModel } from '../lib/Models/Models'
 import { CustomOrbitControls } from '../components/MyCamera'
-import { Planet, Sun } from '../lib/Models/SpaceModels'
-import { CelestialsObject } from '../lib/celestialObjectsArray'
+import { MeshBasicMaterial } from 'three'
+import { slideData } from '../lib/Slides'
 
-const Project = memo(({ handlePopupAction }) => {
-  const dayNight = useColorModeValue('sun', 'moon')
+const Project = () => {
+  const [count, setCount] = useState(0)
+  const inputMaterial = new MeshBasicMaterial({
+    color: '#5a86de',
+    transparent: true,
+    opacity: 0.3
+  })
+
+  const ThreeDButton = ({ text, position, onClick, rotation }) => {
+    return (
+      <Text
+        onClick={onClick}
+        position={position}
+        fontSize={20}
+        color="white"
+        anchorX="center"
+        anchorY="middle"
+        rotation={rotation}
+        outlineColor='#2879ff'
+        outlineWidth={1.2}
+        outlineBlur={3}
+        fillOpacity={0.7}
+        curveRadius={-85}
+      >
+        {text}
+      </Text>
+    )
+  }
 
   return (
     <Canvas
-      key={dayNight}
-      style={{ width: '100vw', height: '100vh' }}
+      style={{ width: '100vw', height: 'calc(100vh - 80px)' }}
       gl={{ antialias: true }}
     >
-      <ambientLight intensity={0.15} />
-      <directionalLight intensity={1.5} position={[-2500, 800, -1000]} />
+      <ambientLight intensity={1} />
       <PerspectiveCamera
         makeDefault
         near={20}
-        fov={90}
-        position={[380, 350, 500]}
-        far={10000}
+        fov={50}
+        position={[2000, 100, 1000]}
+        far={5000}
       />
-      <CustomOrbitControls min={120} max={1600} />
+      <CustomOrbitControls min={100} max={1000} />
       <Suspense fallback={null}>
-        {dayNight === 'sun' ? (
-          <Sun position={[-3000, 800, -1000]} sunSize={200} />
-        ) : (
-          <Planet
-            textureUrl={CelestialsObject[3].textureUrl}
-            position={[-3000, 800, -1000]}
-            size={200}
-            orbitTarget={undefined}
-            orbitSpeed={undefined}
-          />
-        )}
-        <Stars
-          radius={1300}
-          depth={550}
-          count={8000}
-          factor={40}
-          fade
-          speed={1}
-        />
-        <Character />
-        <SpaceShip
-          position={[0, 120, 2000]}
-          size={120}
-          rotation={[0, Math.PI / 1, 0]}
+        <Cone
+          args={[220, 270]}
+          position={[471, 20, 205]}
+          rotation={[0, Math.PI / 1, 3.15]}
+          material={inputMaterial}
         />
         <BasicModel
-          scene="/models/chinese_house/scene.gltf"
-          scale={[50, 50, 50]}
-          position={[-4, 0, 0]}
-          rotation={[0, Math.PI / 5000, 0]}
-          handleClick={handlePopupAction}
+          scene="/models/holoconsole/scene.gltf"
+          scale={[300, 300, 300]}
+          position={[500, 200, -2860]}
         />
-
-        <LandscapeModel
-          url="/models/little_game_town/scene.gltf"
-          position={[0, -2, 0]}
-          scale={10}
+        <Image
+          url={slideData[count].src}
+          scale={[200, 140]}
+          position={[471, 80, 205]}
+          rotation={[0, 1.15, 0]}
+          alt="image"
+          opacity={0.85}
+          zoom={0.85}
         />
         <Preload all />
+        <ThreeDButton
+          text="Previous"
+          position={[630, -19, 390]}
+          rotation={[0, 1.10, 0]}
+          onClick={() => {
+            setCount((prevCount) => (prevCount - 1 + slideData.length) % slideData.length);
+          }}
+        />
+        <ThreeDButton
+          text="Next"
+          position={[690, -20, 255]}
+          rotation={[0, 1.15, 0]}
+          onClick={() => {
+            setCount((prevCount) => (prevCount + 1) % slideData.length);
+          }}
+        />
+        <ThreeDButton
+          text="Website"
+          position={[630, -44, 385]}
+          rotation={[0, 1.10, 0]}
+          onClick={() => {
+            window.open(slideData[count].link, '_blank')
+          }}
+        />
+        <ThreeDButton
+          text="Github"
+          position={[690, -45, 255]}
+          rotation={[0, 1.15, 0]}
+          onClick={() => {
+            window.open(slideData[count].link2, '_blank')
+          }}
+        />
       </Suspense>
     </Canvas>
   )
-}, function Project() {
-  return true;
-}) 
-
-function ProjectPageWrapper() {
-  const [showPopup, setShowPopup] = useState(false)
-  const handlePopupAction = useCallback(() => setShowPopup(prev => !prev), [])
-
-  return (
-    <>
-      {showPopup && <Popup handlePopupAction={handlePopupAction} href="/" />}
-      <Project handlePopupAction={handlePopupAction} />
-    </>
-  )
 }
 
-Project.displayName = 'Project';
-
-export default ProjectPageWrapper
+export default Project

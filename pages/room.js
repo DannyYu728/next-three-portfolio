@@ -13,7 +13,7 @@ const Room = () => {
   return (
     <Canvas
       key={dayNight}
-      style={{ width: '100vw', height: '100vh' }}
+      style={{ width: '100vw', height: 'calc(100vh - 80px)' }}
       gl={{ antialias: true }}
     >
       <ambientLight intensity={1} />
@@ -65,18 +65,21 @@ const Room = () => {
           position={[-170, 90, 200]}
           rotation={[0, Math.PI / -10, 0]}
           animation={'Animation'}
+          hoverEnabled={true}
         />
         <BasicModel
           scene="/models/holoconsole/scene.gltf"
           scale={[50, 50, 50]}
           position={[180, 130, 730]}
           rotation={[0, Math.PI / 1, 0]}
+          hoverEnabled={true}
         />
         <BasicModel
           scene="/models/scifi_display/scene.gltf"
           scale={[200, 200, 200]}
           position={[310, 96, 90]}
           rotation={[Math.PI / 2, Math.PI / 1, Math.PI / 1.4]}
+          hoverEnabled={true}
         />
         <Preload all />
       </Suspense>

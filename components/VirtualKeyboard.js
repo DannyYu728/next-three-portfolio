@@ -70,7 +70,7 @@ const Key = ({ letter, position, updateField, active }) => {
   )
 }
 
-export const VirtualKeyboard = ({ position, rotation, scale, storeMessage }) => {
+export const VirtualKeyboard = ({ position, rotation, scale, storeMessage, setErrorMessage }) => {
   const [activeField, setActiveField] = useState('message')
   const [message, setMessage] = useState('')
   const [sender, setSender] = useState('')
@@ -136,11 +136,15 @@ export const VirtualKeyboard = ({ position, rotation, scale, storeMessage }) => 
       setShiftPressed(false)
     }
 
-    if (key === 'Enter') {
-      storeMessage(message, sender);
-      setMessage('')
-      setSender('')
-      return
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (!message.trim() || !sender.trim()) {
+        setErrorMessage('Both message and sender fields are required.');
+      } else {
+        setErrorMessage(null);
+        storeMessage(message, sender);
+        setMessage('');
+      }
     }
 
     if (activeField === 'message' && message.length < 100) {
@@ -200,9 +204,14 @@ export const VirtualKeyboard = ({ position, rotation, scale, storeMessage }) => 
             prevActiveField === 'message' ? 'sender' : 'message'
           )
         } else if (e.key === 'Enter') {
-          storeMessage(message, sender);
-          setMessage('')
-          setSender('')
+          if (!message.trim() || !sender.trim()) {
+            setErrorMessage('Both message and sender fields are required.');
+          } else {
+            setErrorMessage(null);
+            storeMessage(message, sender);
+            setMessage('');
+            setSender('')
+          }
         } else if (e.key === 'Shift') {
           setShiftPressed(true)
         } else if (e.key === 'CapsLock') {

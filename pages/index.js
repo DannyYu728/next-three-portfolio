@@ -21,7 +21,7 @@ const Home = memo(({ handlePopupAction }) => {
   const bgColor = useColorModeValue('#202023', '#202023')
 
   const inputMaterial = new MeshBasicMaterial({
-    color: 'rgba(108, 122, 137, 1)',
+    color: 'rgb(108, 122, 137)',
     transparent: true,
     side: DoubleSide,
     opacity: 0.2
@@ -30,7 +30,7 @@ const Home = memo(({ handlePopupAction }) => {
   return (
     <Box bg={bgColor}>
       <Canvas
-        style={{ width: '100vw', height: '100vh' }}
+        style={{ width: '100vw', height: 'calc(100vh - 80px)' }}
         gl={{ antialias: true }}
       >
         <PerspectiveCamera
@@ -70,6 +70,7 @@ const Home = memo(({ handlePopupAction }) => {
             scale={[0.5, 0.5, 0.5]}
             position={[-0.5, 4.85, 0]}
             rotation={[0, Math.PI / 5, 0]}
+            hoverEnabled={true}
           />
           <BasicModel
             scene="/models/guest_house/scene.gltf"
