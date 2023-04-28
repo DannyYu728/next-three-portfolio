@@ -11,7 +11,7 @@ import {
   Flex
 } from '@chakra-ui/react'
 import { HamburgerIcon } from '@chakra-ui/icons'
-import { FaHome, FaProjectDiagram, FaCity } from 'react-icons/Fa'
+import { FaHome, FaProjectDiagram, FaCity } from 'react-icons/fa'
 import { GiBed } from 'react-icons/gi'
 import { SiAboutdotme } from 'react-icons/si'
 import { motion } from 'framer-motion'
