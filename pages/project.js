@@ -4,11 +4,9 @@ import {
   Preload,
   Cone,
   Image,
-  Html,
   Text
 } from '@react-three/drei'
 import { Suspense, useState } from 'react'
-import { Button, ButtonGroup, VStack } from '@chakra-ui/react'
 import { BasicModel } from '../lib/Models/Models'
 import { CustomOrbitControls } from '../components/MyCamera'
 import { MeshBasicMaterial } from 'three'

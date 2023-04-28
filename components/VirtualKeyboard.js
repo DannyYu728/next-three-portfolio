@@ -1,5 +1,5 @@
 import { Line, Text, Cone, Box } from '@react-three/drei'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useLoader, useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { useColorModeValue } from '@chakra-ui/react'
@@ -7,17 +7,23 @@ import { useColorModeValue } from '@chakra-ui/react'
 const useKeyPress = targetKey => {
   const [keyPressed, setKeyPressed] = useState(false)
 
-  const handleKeyDown = ({ key }) => {
-    if (key === targetKey) {
-      setKeyPressed(true)
-    }
-  }
+  const handleKeyDown = useCallback(
+    ({ key }) => {
+      if (key === targetKey) {
+        setKeyPressed(true)
+      }
+    },
+    [targetKey]
+  )
 
-  const handleKeyUp = ({ key }) => {
-    if (key === targetKey) {
-      setKeyPressed(false)
-    }
-  }
+  const handleKeyUp = useCallback(
+    ({ key }) => {
+      if (key === targetKey) {
+        setKeyPressed(false)
+      }
+    },
+    [targetKey]
+  )
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown)
@@ -27,13 +33,14 @@ const useKeyPress = targetKey => {
       window.removeEventListener('keydown', handleKeyDown)
       window.removeEventListener('keyup', handleKeyUp)
     }
-  }, [])
+  }, [handleKeyUp, handleKeyDown])
 
   return keyPressed
 }
 
-const Key = ({ letter, position, updateField, active }) => {
+const Key = ({ letter, position, updateField }) => {
   const [hovered, setHovered] = useState(false)
+  const active = useKeyPress(letter);
 
   const onMouseEnter = () => {
     setHovered(true)
@@ -70,7 +77,13 @@ const Key = ({ letter, position, updateField, active }) => {
   )
 }
 
-export const VirtualKeyboard = ({ position, rotation, scale, storeMessage, setErrorMessage }) => {
+export const VirtualKeyboard = ({
+  position,
+  rotation,
+  scale,
+  storeMessage,
+  setErrorMessage
+}) => {
   const [activeField, setActiveField] = useState('message')
   const [message, setMessage] = useState('')
   const [sender, setSender] = useState('')
@@ -117,42 +130,54 @@ export const VirtualKeyboard = ({ position, rotation, scale, storeMessage, setEr
     setHovered(hover)
   }
 
-  const updateField = key => {
-    if (key === 'BKSP') {
-      if (activeField === 'message') {
-        setMessage(prevMessage => prevMessage.slice(0, -1))
-      } else if (activeField === 'sender') {
-        setSender(prevSender => prevSender.slice(0, -1))
+  const updateField = useCallback(
+    key => {
+      if (key === 'BKSP') {
+        if (activeField === 'message') {
+          setMessage(prevMessage => prevMessage.slice(0, -1))
+        } else if (activeField === 'sender') {
+          setSender(prevSender => prevSender.slice(0, -1))
+        }
+        return
       }
-      return
-    }
-    if (key === 'Shift') {
-      setShiftPressed(!shiftPressed)
-      return
-    }
-
-    if (shiftPressed) {
-      key = key.toUpperCase()
-      setShiftPressed(false)
-    }
-
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      if (!message.trim() || !sender.trim()) {
-        setErrorMessage('Both message and sender fields are required.');
-      } else {
-        setErrorMessage(null);
-        storeMessage(message, sender);
-        setMessage('');
+      if (key === 'Shift') {
+        setShiftPressed(!shiftPressed)
+        return
       }
-    }
 
-    if (activeField === 'message' && message.length < 100) {
-      setMessage(prevMessage => prevMessage + key)
-    } else if (activeField === 'sender' && sender.length < 20) {
-      setSender(prevSender => prevSender + key)
-    }
-  }
+      if (shiftPressed) {
+        key = key.toUpperCase()
+        setShiftPressed(false)
+      }
+
+      if (key === 'Enter') {
+        if (!message.trim() || !sender.trim()) {
+          setErrorMessage('Both message and sender fields are required.')
+        } else {
+          setErrorMessage(null)
+          storeMessage(message, sender)
+          setMessage('')
+        }
+      }
+
+      if (activeField === 'message' && message.length < 100) {
+        setMessage(prevMessage => prevMessage + key)
+      } else if (activeField === 'sender' && sender.length < 20) {
+        setSender(prevSender => prevSender + key)
+      }
+    },
+    [
+      activeField,
+      message,
+      setMessage,
+      sender,
+      setSender,
+      shiftPressed,
+      setShiftPressed,
+      storeMessage,
+      setErrorMessage
+    ]
+  )
 
   const lineRef = useRef()
   useFrame(({ clock }) => {
@@ -205,11 +230,11 @@ export const VirtualKeyboard = ({ position, rotation, scale, storeMessage, setEr
           )
         } else if (e.key === 'Enter') {
           if (!message.trim() || !sender.trim()) {
-            setErrorMessage('Both message and sender fields are required.');
+            setErrorMessage('Both message and sender fields are required.')
           } else {
-            setErrorMessage(null);
-            storeMessage(message, sender);
-            setMessage('');
+            setErrorMessage(null)
+            storeMessage(message, sender)
+            setMessage('')
             setSender('')
           }
         } else if (e.key === 'Shift') {
@@ -219,7 +244,7 @@ export const VirtualKeyboard = ({ position, rotation, scale, storeMessage, setEr
         }
       } else {
         if (shiftPressed) {
-          setShiftPressed(false);
+          setShiftPressed(false)
         }
         const keyToInsert =
           shiftPressed || e.getModifierState('CapsLock')
@@ -249,7 +274,17 @@ export const VirtualKeyboard = ({ position, rotation, scale, storeMessage, setEr
       window.removeEventListener('keydown', handleKeyDown)
       window.removeEventListener('keyup', handleKeyUp)
     }
-  }, [message, sender, activeField, hovered, shiftPressed, capsLockActive,])
+  }, [
+    message,
+    sender,
+    activeField,
+    hovered,
+    shiftPressed,
+    capsLockActive,
+    storeMessage,
+    setErrorMessage,
+    updateField
+  ])
   return (
     <group position={position} rotation={rotation} scale={scale}>
       <Cone
@@ -258,11 +293,7 @@ export const VirtualKeyboard = ({ position, rotation, scale, storeMessage, setEr
         material={bgColor}
         position={[2, 32, 0]}
       />
-      <Box
-        args={[125, 40]}
-        material={bgColor}
-        position={[2, -10, 7]}
-      />
+      <Box args={[125, 40]} material={bgColor} position={[2, -10, 7]} />
       <Box
         ref={messageBackgroundRef}
         args={[31, 5, 1]}
@@ -316,7 +347,6 @@ export const VirtualKeyboard = ({ position, rotation, scale, storeMessage, setEr
       </Text>
       {keysLayout.map((row, rowIndex) =>
         row.map((letter, index) => {
-          const active = useKeyPress(letter)
           const letterToDisplay =
             shiftPressed || capsLockActive
               ? shiftLayout[rowIndex][index]
@@ -325,7 +355,6 @@ export const VirtualKeyboard = ({ position, rotation, scale, storeMessage, setEr
             <Key
               key={letter}
               letter={letterToDisplay}
-              active={active}
               position={[index * 8.1 - 47, -rowIndex * 9 + 3.5, 12]}
               updateField={updateField}
             />
