@@ -1,7 +1,7 @@
 import { Canvas } from '@react-three/fiber'
-import { PerspectiveCamera } from '@react-three/drei'
+import { PerspectiveCamera, Box as BoxModel } from '@react-three/drei'
 import { Suspense, useState, useCallback, memo } from 'react'
-import { Vector3 } from 'three'
+import { Vector3, MeshBasicMaterial, DoubleSide } from 'three'
 import { useColorModeValue, Box } from '@chakra-ui/react'
 import {
   Planet,
@@ -20,6 +20,13 @@ const Home = memo(({ handlePopupAction }) => {
   const earthPosition = new Vector3(0, 0, 0)
   const bgColor = useColorModeValue('#202023', '#202023')
 
+  const inputMaterial = new MeshBasicMaterial({
+    color: 'rgba(108, 122, 137, 1)',
+    transparent: true,
+    side: DoubleSide,
+    opacity: 0.2
+  })
+
   return (
     <Box bg={bgColor}>
       <Canvas
@@ -33,18 +40,18 @@ const Home = memo(({ handlePopupAction }) => {
           position={[15, 15, 15]}
           far={10000}
         />
-        <CustomStars
-          radius={300}
-          depth={600}
-          count={6000}
-          factor={30}
-          fade
-          speed={1}
-        />
         <CustomOrbitControls />
         <ambientLight intensity={0.1} />
         <directionalLight intensity={2} position={[5, 6, 20]} />
         <Suspense fallback={null}>
+          <CustomStars
+            radius={300}
+            depth={600}
+            count={6000}
+            factor={30}
+            fade
+            speed={1}
+          />
           {CelestialsObject.map((item, idx) => (
             <Planet
               textureUrl={item.textureUrl}
@@ -63,7 +70,6 @@ const Home = memo(({ handlePopupAction }) => {
             scale={[0.5, 0.5, 0.5]}
             position={[-0.5, 4.85, 0]}
             rotation={[0, Math.PI / 5, 0]}
-            handleClick={handlePopupAction}
           />
           <BasicModel
             scene="/models/guest_house/scene.gltf"
@@ -72,7 +78,14 @@ const Home = memo(({ handlePopupAction }) => {
             rotation={[0, Math.PI / 5, 0]}
           />
           <SpaceShip position={[0, 0, 0]} size={0.5} orbit />
-          <SpeechBubble msg="Hi, Click me to Land!" />
+          <SpeechBubble msg="Hi, Click the house to Land!" />
+          <BoxModel
+            args={[2, 5, 2.5]}
+            material={inputMaterial}
+            position={[-0.28, 4.85, 0.3]}
+            rotation={[0, Math.PI / 5, 0]}
+            onClick={handlePopupAction}
+          />
         </Suspense>
       </Canvas>
     </Box>
@@ -80,15 +93,21 @@ const Home = memo(({ handlePopupAction }) => {
 })
 
 function HomePageWrapper() {
-  const [showPopup, setShowPopup] = useState(false);
-  const handlePopupAction = useCallback(() => setShowPopup((prev) => !prev), [])
+  const [showPopup, setShowPopup] = useState(false)
+  const handlePopupAction = useCallback(() => setShowPopup(prev => !prev), [])
 
   return (
     <>
-      {showPopup && <Popup handlePopupAction={handlePopupAction} href="/town" text={"Enter the Town?"}/>}
+      {showPopup && (
+        <Popup
+          handlePopupAction={handlePopupAction}
+          href="/town"
+          text={'Enter the Town?'}
+        />
+      )}
       <Home handlePopupAction={handlePopupAction} />
     </>
-  );
+  )
 }
-
+Home.displayName = 'Home'
 export default HomePageWrapper

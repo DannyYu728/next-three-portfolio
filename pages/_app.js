@@ -9,9 +9,9 @@ import '../styles/global.css'
 const Website = ({ Component, pageProps, router }) => {
   const route = useRouter()
   const [loading, setLoading] = useState(false)
-  let delayTimeout
-
+  
   useEffect(() => {
+    let delayTimeout;
     const handleStart = () => {
       delayTimeout = setTimeout(() => {
         setLoading(true)

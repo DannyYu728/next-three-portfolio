@@ -71,7 +71,9 @@ const Project = memo(({ handlePopupAction }) => {
       </Suspense>
     </Canvas>
   )
-})
+}, function Project() {
+  return true;
+}) 
 
 function ProjectPageWrapper() {
   const [showPopup, setShowPopup] = useState(false)
@@ -84,5 +86,7 @@ function ProjectPageWrapper() {
     </>
   )
 }
+
+Project.displayName = 'Project';
 
 export default ProjectPageWrapper

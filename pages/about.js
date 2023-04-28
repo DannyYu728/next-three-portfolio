@@ -9,7 +9,7 @@ const About = () => {
           About Me
         </Heading>
         <Text fontSize="lg">
-          My name is Danny Yu, and I'm a software engineer from New York.
+          My name is Danny Yu, and It&apos;s a software engineer from New York.
         </Text>
       </Box>
       <Box>

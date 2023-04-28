@@ -96,7 +96,7 @@ export const VirtualKeyboard = ({ position, rotation, scale }) => {
     opacity: 0.1
   })
   const bgColor = useColorModeValue(inputMaterial, CustomGradientMaterial)
-  const textColor = useColorModeValue("black", "white")
+  const textColor = useColorModeValue('black', 'white')
 
   const keysLayout = [
     ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'BKSP'],
@@ -171,11 +171,25 @@ export const VirtualKeyboard = ({ position, rotation, scale }) => {
       senderBackgroundRef.current.scale.x = Math.max(1, sender.length * 0.1)
     }
   })
-
+  const [capsLockActive, setCapsLockActive] = useState(false)
   useEffect(() => {
     document.body.style.cursor = hovered ? 'pointer' : 'auto'
     const handleKeyDown = e => {
-      const specialKeys = ['Backspace', 'Shift', 'Tab', 'CapsLock', 'Enter', 'Escape', 'Alt', 'Meta', 'Control', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']
+      const specialKeys = [
+        'Backspace',
+        'Shift',
+        'Tab',
+        'CapsLock',
+        'Enter',
+        'Escape',
+        'Alt',
+        'Meta',
+        'Control',
+        'ArrowUp',
+        'ArrowDown',
+        'ArrowLeft',
+        'ArrowRight'
+      ]
 
       if (specialKeys.includes(e.key)) {
         if (e.key === 'Backspace') {
@@ -189,23 +203,44 @@ export const VirtualKeyboard = ({ position, rotation, scale }) => {
           console.log('Sending message:', message, 'from sender:', sender)
           setMessage('')
           setSender('')
+        } else if (e.key === 'Shift') {
+          setShiftPressed(true)
         } else if (e.key === 'CapsLock') {
-          setShiftPressed(prevShiftPressed => !prevShiftPressed)
+          setCapsLockActive(!capsLockActive)
         }
       } else {
+        if (shiftPressed) {
+          setShiftPressed(false);
+        }
+        const keyToInsert =
+          shiftPressed || e.getModifierState('CapsLock')
+            ? e.key.toUpperCase()
+            : e.key
         if (activeField === 'message' && message.length < 100) {
-          setMessage(prevMessage => prevMessage + e.key)
+          setMessage(prevMessage => prevMessage + keyToInsert)
         } else if (activeField === 'sender' && sender.length < 20) {
-          setSender(prevSender => prevSender + e.key)
+          setSender(prevSender => prevSender + keyToInsert)
         }
       }
+      setCapsLockActive(e.getModifierState('CapsLock'))
     }
+
+    const handleKeyUp = e => {
+      if (e.key === 'Shift') {
+        setShiftPressed(false)
+      } else {
+        setCapsLockActive(e.getModifierState('CapsLock'))
+      }
+    }
+
     window.addEventListener('keydown', handleKeyDown)
+    window.addEventListener('keyup', handleKeyUp)
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown)
+      window.removeEventListener('keyup', handleKeyUp)
     }
-  }, [message, sender, activeField, hovered])
+  }, [message, sender, activeField, hovered, shiftPressed, capsLockActive,])
   return (
     <group position={position} rotation={rotation} scale={scale}>
       <Cone
@@ -279,9 +314,10 @@ export const VirtualKeyboard = ({ position, rotation, scale }) => {
       {keysLayout.map((row, rowIndex) =>
         row.map((letter, index) => {
           const active = useKeyPress(letter)
-          const letterToDisplay = shiftPressed
-            ? shiftLayout[rowIndex][index]
-            : letter
+          const letterToDisplay =
+            shiftPressed || capsLockActive
+              ? shiftLayout[rowIndex][index]
+              : letter
           return (
             <Key
               key={letter}

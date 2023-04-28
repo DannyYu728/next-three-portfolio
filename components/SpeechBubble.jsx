@@ -37,9 +37,9 @@ function SpeechBubble({ msg, scale=[8, 2, 1], height=9}) {
     ctx.shadowOffsetX = 1;
     ctx.shadowOffsetY = 1;
     ctx.fillStyle = 'black';
-    ctx.font = "46pt Comic Sans MS";
+    ctx.font = "42pt Comic Sans MS";
     ctx.textBaseline = "top";
-    ctx.fillText(msg, 90, 65);
+    ctx.fillText(msg, 30, 65);
 
     const texture = new CanvasTexture(canvas);
     texture.needsUpdate = true;

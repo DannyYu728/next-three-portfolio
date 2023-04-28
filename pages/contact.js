@@ -1,5 +1,5 @@
 import { Canvas } from '@react-three/fiber'
-import { PerspectiveCamera, Preload, Plane } from '@react-three/drei'
+import { PerspectiveCamera, Preload } from '@react-three/drei'
 import { Suspense } from 'react'
 import { useColorModeValue } from '@chakra-ui/react'
 import { BasicModel } from '../lib/Models/Models'

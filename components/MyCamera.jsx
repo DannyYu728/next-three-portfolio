@@ -37,7 +37,7 @@ export const CustomOrbitControls = ({min=8, max=500}) => {
       controls.current.minDistance = min
       controls.current.maxDistance = max
     }
-  }, [controls, camera, gl.domElement])
+  }, [controls, camera, gl.domElement, max, min])
 
   return <OrbitControls ref={controls} args={[camera, gl.domElement]} />
 }

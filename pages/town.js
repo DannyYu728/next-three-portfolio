@@ -1,7 +1,8 @@
 import { Canvas } from '@react-three/fiber'
-import { PerspectiveCamera, Stars, Preload } from '@react-three/drei'
+import { PerspectiveCamera, Stars, Preload, Box } from '@react-three/drei'
 import { Suspense, useState, memo, useCallback } from 'react'
 import { useColorModeValue } from '@chakra-ui/react'
+import { MeshBasicMaterial, DoubleSide } from 'three'
 import { Popup } from '../components/PopUp'
 import { LandscapeModel } from '../lib/Models/Landscape'
 import { Character, SpaceShip, BasicModel } from '../lib/Models/Models.js'
@@ -12,6 +13,13 @@ import SpeechBubble from '../components/SpeechBubble'
 
 const Town = memo(({ handlePopupAction }) => {
   const dayNight = useColorModeValue('sun', 'moon')
+
+  const inputMaterial = new MeshBasicMaterial({
+    color: 'rgba(108, 122, 137, 1)',
+    transparent: true,
+    side: DoubleSide,
+    opacity: 0.2
+  })
 
   return (
     <Canvas
@@ -60,10 +68,9 @@ const Town = memo(({ handlePopupAction }) => {
           scale={[50, 50, 50]}
           position={[-4, 0, 0]}
           rotation={[0, Math.PI / 5000, 0]}
-          handleClick={handlePopupAction}
         />
         <SpeechBubble
-          msg="Hi, Click me to Enter!"
+          msg="Hi, Click the house to Enter!"
           scale={[160, 40, 20]}
           height={300}
         />
@@ -71,6 +78,13 @@ const Town = memo(({ handlePopupAction }) => {
           url="/models/little_game_town/scene.gltf"
           position={[0, -2, 0]}
           scale={10}
+        />
+        <Box
+          args={[200, 200, 300]}
+          material={inputMaterial}
+          position={[-4, 100, 0]}
+          // rotation={[0, Math.PI / 5, 0]}
+          onClick={handlePopupAction}
         />
         <Preload all />
       </Suspense>
@@ -84,10 +98,17 @@ function TownPageWrapper() {
 
   return (
     <>
-      {showPopup && <Popup handlePopupAction={handlePopupAction} href="/room" text={'Enter Building?'}/>}
+      {showPopup && (
+        <Popup
+          handlePopupAction={handlePopupAction}
+          href="/room"
+          text={'Enter Building?'}
+        />
+      )}
       <Town handlePopupAction={handlePopupAction} />
     </>
   )
 }
+Town.displayName = 'TownPage'
 
 export default TownPageWrapper
