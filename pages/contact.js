@@ -14,6 +14,7 @@ import {
   limit,
   addDoc
 } from 'firebase/firestore'
+import { CustomLoader } from '../components/CustomLoader'
 
 const Contact = () => {
   const [messages, setMessages] = useState([])
@@ -103,6 +104,7 @@ const Contact = () => {
         )}
         <Preload all />
       </Suspense>
+      <CustomLoader />
     </Canvas>
   )
 }

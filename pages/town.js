@@ -10,6 +10,7 @@ import { CustomOrbitControls } from '../components/MyCamera'
 import { Planet, Sun } from '../lib/Models/SpaceModels'
 import { CelestialsObject } from '../lib/celestialObjectsArray'
 import SpeechBubble from '../components/SpeechBubble'
+import { CustomLoader } from '../components/CustomLoader'
 
 const Town = memo(({ handlePopupAction }) => {
   const dayNight = useColorModeValue('sun', 'moon')
@@ -83,11 +84,11 @@ const Town = memo(({ handlePopupAction }) => {
           args={[200, 200, 300]}
           material={inputMaterial}
           position={[-4, 100, 0]}
-          // rotation={[0, Math.PI / 5, 0]}
           onClick={handlePopupAction}
         />
         <Preload all />
       </Suspense>
+      <CustomLoader />
     </Canvas>
   )
 })

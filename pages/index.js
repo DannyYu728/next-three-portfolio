@@ -1,7 +1,7 @@
 import { Canvas } from '@react-three/fiber'
 import { PerspectiveCamera, Box as BoxModel } from '@react-three/drei'
 import { Suspense, useState, useCallback, memo } from 'react'
-import { Vector3, MeshBasicMaterial, DoubleSide } from 'three'
+import { Vector3, MeshBasicMaterial } from 'three'
 import { useColorModeValue, Box } from '@chakra-ui/react'
 import {
   Planet,
@@ -15,6 +15,7 @@ import { CelestialsObject } from '../lib/celestialObjectsArray'
 import { CustomStars } from '../lib/Models/CustomStars'
 import { CustomOrbitControls } from '../components/MyCamera'
 import { Popup } from '../components/PopUp'
+import { CustomLoader } from '../components/CustomLoader'
 
 const Home = memo(({ handlePopupAction }) => {
   const earthPosition = new Vector3(0, 0, 0)
@@ -23,8 +24,7 @@ const Home = memo(({ handlePopupAction }) => {
   const inputMaterial = new MeshBasicMaterial({
     color: 'rgb(108, 122, 137)',
     transparent: true,
-    side: DoubleSide,
-    opacity: 0.2
+    opacity: 0.0
   })
 
   return (
@@ -47,7 +47,7 @@ const Home = memo(({ handlePopupAction }) => {
           <CustomStars
             radius={300}
             depth={600}
-            count={6000}
+            count={5000}
             factor={30}
             fade
             speed={1}
@@ -88,6 +88,7 @@ const Home = memo(({ handlePopupAction }) => {
             onClick={handlePopupAction}
           />
         </Suspense>
+        <CustomLoader />
       </Canvas>
     </Box>
   )

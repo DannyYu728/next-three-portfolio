@@ -3,6 +3,7 @@ import { PerspectiveCamera, Preload, Image } from '@react-three/drei'
 import { Suspense, useEffect, useState } from 'react'
 import { BasicModel } from '../lib/Models/Models'
 import { CustomOrbitControls } from '../components/MyCamera'
+import { CustomLoader } from '../components/CustomLoader'
 
 const About = () => {
   const [show, setShow] = useState(false)
@@ -12,7 +13,7 @@ const About = () => {
     const handleStart = () => {
       delayTimeout = setTimeout(() => {
         setShow(true)
-      }, 1500)
+      }, 2000)
     }
     handleStart()
 
@@ -43,6 +44,7 @@ const About = () => {
           position={[0, -50, 80]}
           animation={'Animation'}
           freeze={true}
+          rotation={[0, 0, 0]}
         />
         {show && (
           <Image
@@ -55,6 +57,7 @@ const About = () => {
         )}
         <Preload all />
       </Suspense>
+      <CustomLoader />
     </Canvas>
   )
 }

@@ -5,6 +5,7 @@ import { LandscapeModel } from '../lib/Models/Landscape'
 import { BasicModel } from '../lib/Models/Models'
 import { CustomOrbitControls } from '../components/MyCamera'
 import FloatingSphere from '../components/FloatBubble'
+import { CustomLoader } from '../components/CustomLoader'
 
 const Room = () => {
 
@@ -80,6 +81,7 @@ const Room = () => {
         />
         <Preload all />
       </Suspense>
+      <CustomLoader />
     </Canvas>
   )
 }

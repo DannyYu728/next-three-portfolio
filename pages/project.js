@@ -11,6 +11,7 @@ import { BasicModel } from '../lib/Models/Models'
 import { CustomOrbitControls } from '../components/MyCamera'
 import { MeshBasicMaterial } from 'three'
 import { slideData } from '../lib/Slides'
+import { CustomLoader } from '../components/CustomLoader'
 
 const Project = () => {
   const [count, setCount] = useState(0)
@@ -110,6 +111,7 @@ const Project = () => {
           }}
         />
       </Suspense>
+      <CustomLoader />
     </Canvas>
   )
 }
