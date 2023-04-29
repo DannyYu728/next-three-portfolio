@@ -38,7 +38,7 @@ const Home = memo(({ handlePopupAction }) => {
           makeDefault
           fov={90}
           position={[15, 15, 15]}
-          far={10000}
+          far={8000}
         />
         <CustomOrbitControls />
         <ambientLight intensity={0.1} />
@@ -47,7 +47,7 @@ const Home = memo(({ handlePopupAction }) => {
           <CustomStars
             radius={300}
             depth={600}
-            count={5000}
+            count={3000}
             factor={30}
             fade
             speed={1}
@@ -63,7 +63,7 @@ const Home = memo(({ handlePopupAction }) => {
             />
           ))}
           <Sun />
-          <AsteroidBelt count={5000} />
+          <AsteroidBelt count={3000} />
           <SaturnRing />
           <BasicModel
             scene="/models/chinese_house/scene.gltf"

@@ -34,7 +34,7 @@ const Town = memo(({ handlePopupAction }) => {
         near={20}
         fov={90}
         position={[380, 350, 500]}
-        far={10000}
+        far={5000}
       />
       <CustomOrbitControls min={120} max={1600} />
       <Suspense fallback={null}>
@@ -52,7 +52,7 @@ const Town = memo(({ handlePopupAction }) => {
         <Stars
           radius={1300}
           depth={550}
-          count={8000}
+          count={1000}
           factor={40}
           fade
           speed={1}
