@@ -27,8 +27,8 @@ const Town = memo(({ handlePopupAction }) => {
       style={{ width: '100vw', height: 'calc(100vh - 80px)' }}
       gl={{ antialias: true }}
     >
-      <ambientLight intensity={0.15} />
-      <directionalLight intensity={1.5} position={[-2500, 800, -1000]} />
+      <ambientLight intensity={0.6} />
+      {/* <directionalLight intensity={1.5} position={[-2500, 800, -1000]} /> */}
       <PerspectiveCamera
         makeDefault
         near={20}

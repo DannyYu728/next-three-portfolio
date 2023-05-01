@@ -42,7 +42,7 @@ const Home = memo(({ handlePopupAction }) => {
         />
         <CustomOrbitControls />
         <ambientLight intensity={0.1} />
-        <directionalLight intensity={2} position={[5, 6, 20]} />
+        <directionalLight intensity={1} position={[5, 6, 20]} />
         <Suspense fallback={null}>
           <CustomStars
             radius={300}
